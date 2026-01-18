@@ -16,6 +16,7 @@ import './flt-flight-status-icons';
 import './flt-flight-status-detailed';
 import './flt-hide-transponder';
 import './flt-flex-fuel';
+import './flt-hide-disabled-buttons';
 import './flt-shorten-addresses';
 import './flt-shorten-cargo-capacity';
 import './hide-ctx-name';
