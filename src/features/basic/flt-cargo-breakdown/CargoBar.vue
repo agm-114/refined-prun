@@ -3,7 +3,7 @@ import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { getMaterialCategoryCssClass } from '@src/infrastructure/prun-ui/item-tracker';
 import { materialCategoriesStore } from '@src/infrastructure/prun-api/data/material-categories';
-import { fixed02, percent0 } from '@src/utils/format';
+import { fixed02 } from '@src/utils/format';
 import { ref, watch, computed } from 'vue';
 
 const { shipId } = defineProps<{
@@ -244,7 +244,7 @@ const stripeWidth = computed(() => {
       <div
         v-for="segment in cargoBar.segments"
         :key="segment.name"
-        :class="[$style.segment, segment.class, segment.borderClasses]"
+        :class="[segment.class, segment.borderClasses]"
         :style="{ width: segment.width }"
         :title="segment.title">
         <div v-if="segment.load" :class="$style.full">
@@ -301,11 +301,6 @@ const stripeWidth = computed(() => {
   height: 50%;
   border-top: 1px solid #999;
   border-right: 1px solid #999;
-}
-
-.segment {
-  height: 100%;
-  /*background: #2a2a2a !important;*/
 }
 
 .borderLeft {
