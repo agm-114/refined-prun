@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- `XIT CONTC`: Show an address link in the "Contribute" condition
+
 ## 26.3.22
 
 ### Added
