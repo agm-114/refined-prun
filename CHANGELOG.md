@@ -10,6 +10,7 @@
 ### Changed
 
 - `XIT CONTC`: Show an address link in the "Contribute" condition
+- `cxpo-order-book`: Add a delete button to own orders
 
 ## 26.3.22
 
