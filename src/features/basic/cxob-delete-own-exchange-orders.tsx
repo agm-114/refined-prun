@@ -56,7 +56,7 @@ function getOwnFXOrders(parameter?: string) {
 }
 
 function init() {
-  applyCssRule(`.${C.ComExOrderBookPanel.amount}`, $style.amount);
+  applyCssRule([`.${C.ComExOrderBookPanel.amount}`, `.${C.ForExOrderBook.amount}`], $style.amount);
   tiles.observe(['CXOB', 'FXOB'], onTileReady);
 }
 
