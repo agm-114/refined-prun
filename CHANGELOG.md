@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `cxo-delete-order-button`: Adds a delete button
+
+### Changed
+
+- `XIT CONTC`: Show an address link in the "Contribute" condition
+
 ## 26.3.22
 
 ### Added
