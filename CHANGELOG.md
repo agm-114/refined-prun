@@ -5,6 +5,7 @@
 ### Added
 
 - `cxo-delete-order-button`: Adds a delete button
+- `cxob-delete-own-exchange-orders`: Adds a delete button to own orders
 
 ### Changed
 
