@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- `inv-shpt-condition-indicator`: Adds a condition indicator to SHPT and BLCK items
+
 ### Changed
 
 - `XIT CONTC`: Show an address link in the "Contribute" condition
