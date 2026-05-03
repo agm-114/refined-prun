@@ -4,6 +4,7 @@
 
 ### Added
 
+- `adm-hide-inactive-buttons`: Hides inactive buttons
 - `inv-shpt-condition-indicator`: Adds a condition indicator to SHPT and BLCK items
 
 ### Changed
