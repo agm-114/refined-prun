@@ -10,8 +10,6 @@ import { cxosStore } from '@src/infrastructure/prun-api/data/cxos';
 import { fxosStore } from '@src/infrastructure/prun-api/data/fxos';
 import { refAnimationFrame } from '@src/utils/reactive-dom';
 
-const openedWindows = new Map<string, Element>();
-
 export async function deleteExchangeOrderFromClick(
   event: Event,
   orderId: string,
@@ -48,17 +46,12 @@ export async function deleteExchangeOrder(
   });
 
   const isCX = screenCommand === 'CXOS';
-
-  let window = openedWindows.get(screenCommand);
-  if (!window || !window.isConnected) {
-    // FXOS doesn't support 9999 D:
-    window = await showBuffer(isCX ? `CXOS 9999` : screenCommand, {
-      autoClose: true,
-      closeWhen: shouldClose,
-      force: true,
-    });
-    openedWindows.set(screenCommand, window);
-  }
+  // FXOS doesn't support 9999 D:
+  const window = await showBuffer(isCX ? `CXOS 9999` : screenCommand, {
+    autoClose: true,
+    closeWhen: shouldClose,
+    force: true,
+  });
   await watchUntil(() => (isCX ? cxosStore.fetched.value : fxosStore.fetched.value));
   const orderCount = (isCX ? cxosStore.all.value?.length : fxosStore.all.value?.length) ?? 0;
   if (orderCount === 0) {
