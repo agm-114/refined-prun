@@ -3,7 +3,7 @@ import { formatEta } from '@src/utils/format';
 import { refAttributeValue, refTextContent } from '@src/utils/reactive-dom';
 import { createReactiveSpan } from '@src/utils/reactive-element';
 import { watchEffectWhileNodeAlive } from '@src/utils/watch';
-import { timestampEachMinute, timestampEachSecond } from '@src/utils/dayjs';
+import { timestampEachMinute } from '@src/utils/dayjs';
 
 function onTileReady(tile: PrunTile) {
   const line = computed(() => productionStore.getById(tile.parameter)!);
