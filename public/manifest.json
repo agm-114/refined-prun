@@ -8,7 +8,10 @@
     "gecko": {
       "id": "{c35c3edc-0acc-4531-b01c-35b6bede69fb}",
       "strict_min_version": "109.0",
-      "update_url": "https://storage.googleapis.com/YOUR_BUCKET/updates.json"
+      "update_url": "https://storage.googleapis.com/YOUR_BUCKET/updates.json",
+      "data_collection_permissions": {
+        "optional": ["searchTerms", "personallyIdentifyingInfo"]
+      }
     }
   },
   "permissions": [
