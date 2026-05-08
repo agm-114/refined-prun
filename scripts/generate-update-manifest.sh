@@ -5,7 +5,7 @@
 #
 # Example:
 #   bash scripts/generate-update-manifest.sh refined-prun-1.2.3.xpi \
-#     https://storage.googleapis.com/MY_BUCKET/refined-prun-1.2.3.xpi
+#     https://storage.googleapis.com/oog-fork-gcs-bucket/refined-prun-1.2.3.xpi
 #
 # Output: updates.json at repo root (upload this file to GCS alongside the .xpi)
 set -euo pipefail
@@ -41,5 +41,5 @@ echo "  update_link: ${xpi_url}"
 echo "  sha256:      ${hash}"
 echo ""
 echo "Upload both files to GCS:"
-echo "  gsutil cp ${xpi_file} gs://YOUR_BUCKET/${xpi_file}"
-echo "  gsutil cp updates.json gs://YOUR_BUCKET/updates.json"
+echo "  gsutil cp ${xpi_file} gs://oog-fork-gcs-bucket/${xpi_file}"
+echo "  gsutil cp updates.json gs://oog-fork-gcs-bucket/updates.json"
