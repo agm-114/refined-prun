@@ -6,7 +6,7 @@
   "minimum_chrome_version": "107",
   "browser_specific_settings": {
     "gecko": {
-      "id": "{c35c3edc-0acc-4531-b01c-35b6bede69fb}",
+      "id": "{cea48e52-981d-47bb-b859-bfec6a59fcae}",
       "strict_min_version": "140.0",
       "update_url": "https://storage.googleapis.com/oog-fork-gcs-bucket/updates.json",
       "data_collection_permissions": {
