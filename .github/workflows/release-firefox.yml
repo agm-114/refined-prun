@@ -21,6 +21,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Stamp version
+        run: |
+          version="$(date -u +'%Y.%-m.%-d').${{ github.run_number }}"
+          npx dot-json@1 "$DIRECTORY/manifest.json" version "$version"
       - uses: actions/upload-artifact@v4
         with:
           path: ${{ env.DIRECTORY }}
