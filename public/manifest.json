@@ -7,7 +7,11 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "{c35c3edc-0acc-4531-b01c-35b6bede69fb}",
-      "strict_min_version": "109.0"
+      "strict_min_version": "109.0",
+      "update_url": "https://storage.googleapis.com/oog-fork-gcs-bucket/updates.json",
+      "data_collection_permissions": {
+        "optional": ["searchTerms", "personallyIdentifyingInfo"]
+      }
     }
   },
   "permissions": [
