@@ -336,7 +336,7 @@ function onCreateClick() {
       </tbody>
     </table>
     <ActionBar>
-      <PrunButton primary @click="openEditor">ADD CMD</PrunButton>
+      <PrunButton primary @click="openEditor">EDIT CMDS</PrunButton>
       <PrunButton primary @click="saveLayout">SAVE LAYOUT</PrunButton>
     </ActionBar>
   </div>
