@@ -4,7 +4,10 @@ import { useTile } from '@src/hooks/use-tile';
 import ExecuteActionPackage from '@src/features/XIT/ACT/ExecuteActionPackage.vue';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import { getEntityNameFromAddress } from '@src/infrastructure/prun-api/data/addresses';
-import { configurableValue } from '@src/features/XIT/ACT/shared-types';
+import { ActionPackageConfig, configurableValue } from '@src/features/XIT/ACT/shared-types';
+import { computeResupplyBill } from '@src/features/XIT/ACT/material-groups/resupply/bill';
+import type { MaterialFilter } from '@src/features/XIT/ACT/material-groups/resupply/config';
+import $style from './BurnActWindow.module.css';
 
 // Join all parameters in case a naturalId was split on underscores by the XIT router.
 const parameters = useXitParameters();
@@ -66,9 +69,77 @@ const pkg = computed(
       ],
     }) as UserData.ActionPackageData,
 );
+
+const generateReturnJson = ref(false);
+
+function afterExecute(pkgConfig: ActionPackageConfig): string | undefined {
+  if (!generateReturnJson.value) {
+    return undefined;
+  }
+
+  const resupplyGroup = pkg.value.groups[0];
+  const mtraAction = pkg.value.actions.find(x => x.type === 'MTRA');
+  if (!resupplyGroup || !mtraAction) {
+    return undefined;
+  }
+
+  const groupName = resupplyGroup.name!;
+
+  type ResupplyConfig = { planet?: string; days?: number; materialFilter?: MaterialFilter };
+  type MtraConfig = { origin?: string; destination?: string };
+  const groups = pkgConfig.materialGroups as unknown as Record<string, ResupplyConfig>;
+  const actions = pkgConfig.actions as unknown as Record<string, MtraConfig>;
+  const resupplyConfig = groups[groupName] ?? {};
+  const mtraConfig = actions[mtraAction.name!] ?? {};
+
+  const planet =
+    resupplyGroup.planet === configurableValue ? resupplyConfig.planet : resupplyGroup.planet;
+  const daysRaw = resupplyGroup.days;
+  const days =
+    daysRaw === configurableValue
+      ? resupplyConfig.days
+      : typeof daysRaw === 'number'
+        ? daysRaw
+        : parseFloat(daysRaw as string);
+  const materialFilter = resupplyConfig.materialFilter;
+
+  const materials = computeResupplyBill(resupplyGroup, planet, days, materialFilter) ?? {};
+  const origin = mtraAction.dest === configurableValue ? mtraConfig.destination : mtraAction.dest;
+
+  const result: UserData.ActionPackageData = {
+    actions: [
+      {
+        type: 'MTRA',
+        name: groupName,
+        group: groupName,
+        origin: origin ?? configurableValue,
+        dest: configurableValue,
+      },
+    ],
+    global: { name: 'Auto Offload' },
+    groups: [
+      {
+        type: 'Manual',
+        name: groupName,
+        materials,
+      },
+    ],
+  };
+
+  return JSON.stringify(result, null, 2);
+}
 </script>
 
 <template>
   <div v-if="!planetName">Planet "{{ naturalId }}" not found.</div>
-  <ExecuteActionPackage v-else :pkg="pkg" />
+  <ExecuteActionPackage v-else :pkg="pkg" :after-execute="afterExecute">
+    <template #extra>
+      <div :class="$style.jsonOption">
+        <label>
+          <input type="checkbox" v-model="generateReturnJson" />
+          Generate Return JSON
+        </label>
+      </div>
+    </template>
+  </ExecuteActionPackage>
 </template>

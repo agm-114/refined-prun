@@ -10,7 +10,10 @@ import ConfigWindow from '@src/features/XIT/ACT/ConfigureWindow.vue';
 import { ActionPackageConfig } from '@src/features/XIT/ACT/shared-types';
 import { act } from '@src/features/XIT/ACT/act-registry';
 
-const { pkg } = defineProps<{ pkg: UserData.ActionPackageData }>();
+const { pkg, afterExecute } = defineProps<{
+  pkg: UserData.ActionPackageData;
+  afterExecute?: (config: ActionPackageConfig) => string | undefined;
+}>();
 
 const tile = useTile();
 let goingToSplit = ref(false);
@@ -92,6 +95,10 @@ const runner = new ActionRunner({
   onEnd: () => {
     isRunning.value = false;
     status.value = undefined;
+    const extra = afterExecute?.(config.value);
+    if (extra !== undefined) {
+      logMessage(null, extra);
+    }
   },
   onStatusChanged: (title, keepReady) => {
     status.value = title;
@@ -156,11 +163,11 @@ function clearLog() {
   <div v-if="goingToSplit" />
   <div v-else :class="$style.root">
     <Header :class="$style.header">{{ pkg.global.name }}</Header>
-    <ConfigWindow
-      v-if="shouldShowConfigure"
-      :pkg="pkg"
-      :config="config"
-      :class="$style.mainWindow" />
+    <ConfigWindow v-if="shouldShowConfigure" :pkg="pkg" :config="config" :class="$style.mainWindow">
+      <template v-if="$slots.extra" #extra>
+        <slot name="extra" />
+      </template>
+    </ConfigWindow>
     <LogWindow v-else :messages="log" :scrolling="logScrolling" :class="$style.mainWindow" />
     <div :class="$style.status">
       <span>Status: </span>
