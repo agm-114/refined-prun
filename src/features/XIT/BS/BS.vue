@@ -123,12 +123,12 @@ const filteredBases = computed(() => {
   <LoadingSpinner v-if="bases === undefined" />
   <template v-else>
     <div :class="C.ComExOrdersPanel.filter">
-      <RadioItem v-model="showCmds" horizontal>Cmds</RadioItem>
-      <RadioItem v-model="showBurn" horizontal>Burn</RadioItem>
-      <RadioItem v-model="showProd" horizontal>Prod</RadioItem>
-      <RadioItem v-model="showRepair" horizontal>Repair</RadioItem>
-      <RadioItem v-model="showInv" horizontal>Inv</RadioItem>
-      <RadioItem v-model="showWar" horizontal>War</RadioItem>
+      <RadioItem v-model="showCmds" horizontal>CMDS</RadioItem>
+      <RadioItem v-model="showBurn" horizontal>BURN</RadioItem>
+      <RadioItem v-model="showProd" horizontal>PROD</RadioItem>
+      <RadioItem v-model="showRepair" horizontal>REPAIR</RadioItem>
+      <RadioItem v-model="showInv" horizontal>INV</RadioItem>
+      <RadioItem v-model="showWar" horizontal>WAR</RadioItem>
       <div :class="$style.spacer" />
       <div :class="$style.searchContainer">
         Planet:&nbsp;

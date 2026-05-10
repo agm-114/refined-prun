@@ -63,6 +63,19 @@ if (!tile.parameter) {
 // Just use tile.parameter directly
 ```
 
+## XIT Filter Bars
+
+XIT panels with filter toggles use `C.ComExOrdersPanel.filter` as the container and `RadioItem` with `horizontal` prop for each toggle. Labels must be ALL CAPS:
+
+```html
+<div :class="C.ComExOrdersPanel.filter">
+  <RadioItem v-model="showFoo" horizontal>FOO</RadioItem>
+  <RadioItem v-model="showBar" horizontal>BAR</RadioItem>
+</div>
+```
+
+---
+
 ## Adding an XIT Command
 
 XIT commands are custom in-game panels opened via the `XIT` buffer. Register in a `.ts` file:
