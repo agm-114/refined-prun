@@ -80,6 +80,7 @@ const blocks = computed(() => {
         :config="block.config"
         :ship-store="block.shipStore" />
     </template>
+    <slot name="extra" />
   </div>
 </template>
 
