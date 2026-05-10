@@ -84,7 +84,7 @@ function afterExecute(
 
   const resupplyGroup = pkg.value.groups[0];
   const mtraAction = pkg.value.actions.find(x => x.type === 'MTRA');
-  if (!resupplyGroup || !mtraAction) {
+  if (!mtraAction) {
     return;
   }
 
