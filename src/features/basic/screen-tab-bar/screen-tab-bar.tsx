@@ -70,17 +70,21 @@ function extractScreenId(url?: string) {
 
 function addFolder() {
   const n = userData.tabs.folders.length + 1;
+  const name = window.prompt('Folder name:', `FLDR ${n}`);
+  if (name === null || name.trim() === '') return;
   const id = `fldr-${Math.random().toString(36).slice(2, 9)}`;
-  userData.tabs.folders.push({ id, name: `FLDR ${n}`, screenIds: [] });
+  userData.tabs.folders.push({ id, name: name.trim().toUpperCase(), screenIds: [] });
   userData.tabs.order.push(id);
 }
 
 function onContainerReady(container: HTMLElement) {
   createFragmentApp(TabBar).appendTo(container);
+  let fldrInserted = false;
   subscribe($$(container, C.HeadItem.label), label => {
-    if (label.textContent !== 'FULL') return;
+    if (fldrInserted || label.textContent !== 'FULL') return;
     const fullItem = label.closest(`.${C.HeadItem.container}`) as HTMLElement | null;
-    if (!fullItem || fullItem.parentElement !== container) return;
+    if (!fullItem) return;
+    fldrInserted = true;
     createFragmentApp(() => (
       <div
         class={[C.HeadItem.container, C.fonts.fontRegular, C.type.typeRegular, C.HeadItem.link]}
