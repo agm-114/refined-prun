@@ -1,9 +1,11 @@
 import $style from './screen-tab-bar.module.css';
 import TabBar from './TabBar.vue';
+import FolderCreator from './FolderCreator.vue';
 import { userData } from '@src/store/user-data';
 import removeArrayElement from '@src/utils/remove-array-element';
 import { watchEffectWhileNodeAlive } from '@src/utils/watch';
 import { syncState } from '@src/features/basic/screen-tab-bar/sync';
+import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 
 function onListReady(list: HTMLElement) {
   subscribe($$(list, C.ScreenControls.screen), onScreenItemReady);
@@ -69,12 +71,7 @@ function extractScreenId(url?: string) {
 }
 
 function addFolder() {
-  const n = userData.tabs.folders.length + 1;
-  const name = window.prompt('Folder name:', `FLDR ${n}`);
-  if (name === null || name.trim() === '') return;
-  const id = `fldr-${Math.random().toString(36).slice(2, 9)}`;
-  userData.tabs.folders.push({ id, name: name.trim().toUpperCase(), screenIds: [] });
-  userData.tabs.order.push(id);
+  void showBuffer('XIT FLDR');
 }
 
 function onContainerReady(container: HTMLElement) {
@@ -101,6 +98,13 @@ function init() {
   subscribe($$(document, C.ScreenControls.screens), onListReady);
   applyCssRule(`.${C.Head.contextAndScreens}`, $style.contextAndScreens);
   applyCssRule(`.${C.ScreenControls.container}`, $style.screenControls);
+  xit.add({
+    command: 'FLDR',
+    name: 'NEW FOLDER',
+    description: 'Create a new screen folder.',
+    component: () => FolderCreator,
+    bufferSize: [300, 110],
+  });
 }
 
 features.add(import.meta.url, init, 'Adds a tab bar for user screens.');

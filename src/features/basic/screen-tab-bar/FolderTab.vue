@@ -3,6 +3,8 @@ import { screensStore } from '@src/infrastructure/prun-api/data/screens';
 import { userData } from '@src/store/user-data';
 import removeArrayElement from '@src/utils/remove-array-element';
 
+defineOptions({ inheritAttrs: false });
+
 const { folder } = defineProps<{
   folder: UserData.TabFolder;
 }>();
@@ -95,6 +97,7 @@ function getScreen(id: string) {
 <template>
   <div
     ref="tab"
+    v-bind="$attrs"
     :class="$style.folderTab"
     @mouseenter="onTabEnter"
     @mouseleave="onTabLeave"
