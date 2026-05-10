@@ -17,7 +17,9 @@ onMounted(() => {
 
 function onCreate() {
   const trimmed = name.value.trim();
-  if (!trimmed) return;
+  if (!trimmed) {
+    return;
+  }
   const id = createId();
   userData.tabs.folders.push({ id, name: trimmed.toUpperCase(), screenIds: [] });
   userData.tabs.order.push(id);

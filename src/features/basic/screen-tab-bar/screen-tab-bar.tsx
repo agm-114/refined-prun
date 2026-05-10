@@ -74,9 +74,13 @@ function onContainerReady(container: HTMLElement) {
   createFragmentApp(TabBar).appendTo(container);
   let fldrInserted = false;
   subscribe($$(container, C.HeadItem.label), label => {
-    if (fldrInserted || label.textContent !== 'FULL') return;
+    if (fldrInserted || label.textContent !== 'FULL') {
+      return;
+    }
     const fullItem = label.closest(`.${C.HeadItem.container}`) as HTMLElement | null;
-    if (!fullItem) return;
+    if (!fullItem) {
+      return;
+    }
     fldrInserted = true;
     createFragmentApp(FldrButton).before(fullItem);
   });

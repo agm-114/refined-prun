@@ -25,7 +25,9 @@ function scheduleHide() {
 
 function onTabEnter() {
   clearHide();
-  if (userData.tabs.folders.length > 0) showDropdown.value = true;
+  if (userData.tabs.folders.length > 0) {
+    showDropdown.value = true;
+  }
 }
 
 function onTabLeave() {
@@ -46,21 +48,29 @@ function onClick() {
 
 function deleteFolder(folderId: string) {
   const folder = userData.tabs.folders.find(f => f.id === folderId);
-  if (!folder) return;
+  if (!folder) {
+    return;
+  }
   for (const screenId of folder.screenIds) {
     userData.tabs.order.push(screenId);
   }
   removeArrayElement(userData.tabs.folders, folder);
   removeArrayElement(userData.tabs.order, folderId);
-  if (userData.tabs.folders.length === 0) showDropdown.value = false;
+  if (userData.tabs.folders.length === 0) {
+    showDropdown.value = false;
+  }
 }
 
 const dropdownStyle = ref<Record<string, string>>({});
 
 watchEffect(() => {
-  if (!showDropdown.value) return;
+  if (!showDropdown.value) {
+    return;
+  }
   const rect = tabEl.value?.getBoundingClientRect();
-  if (!rect) return;
+  if (!rect) {
+    return;
+  }
   dropdownStyle.value = {
     top: `${rect.bottom}px`,
     left: `${rect.left}px`,
@@ -94,7 +104,7 @@ watchEffect(() => {
         <div
           :class="[C.ScreenControls.delete, C.type.typeSmall, $style.delBtn]"
           @click.prevent="deleteFolder(folder.id)">
-          DEL
+          del
         </div>
       </div>
     </div>

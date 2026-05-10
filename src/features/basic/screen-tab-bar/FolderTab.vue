@@ -71,9 +71,13 @@ function removeScreen(screenId: string) {
 const dropdownStyle = ref<Record<string, string>>({});
 
 watchEffect(() => {
-  if (!showDropdown.value) return;
+  if (!showDropdown.value) {
+    return;
+  }
   const rect = tabEl.value?.getBoundingClientRect();
-  if (!rect) return;
+  if (!rect) {
+    return;
+  }
   dropdownStyle.value = {
     top: `${rect.bottom}px`,
     left: `${rect.left}px`,
@@ -105,10 +109,7 @@ function getScreen(id: string) {
       :style="dropdownStyle"
       @mouseenter="onDropdownEnter"
       @mouseleave="onDropdownLeave">
-      <div
-        v-for="screenId in folder.screenIds"
-        :key="screenId"
-        :class="C.ScreenControls.screen">
+      <div v-for="screenId in folder.screenIds" :key="screenId" :class="C.ScreenControls.screen">
         <a
           :href="`#screen=${screenId}`"
           :class="[C.ScreenControls.name, screenId === currentScreenId && $style.currentScreen]">
@@ -117,7 +118,7 @@ function getScreen(id: string) {
         <div
           :class="[C.ScreenControls.delete, C.type.typeSmall, $style.rmvBtn]"
           @click.prevent="removeScreen(screenId)">
-          RMV
+          rmv
         </div>
       </div>
     </div>
