@@ -13,6 +13,7 @@ import RadioItem from '@src/components/forms/RadioItem.vue';
 import FleetStatusCell from './FleetStatusCell.vue';
 import CargoBar from './CargoBar.vue';
 import { fixed0 } from '@src/utils/format';
+import coloredValue from '@src/infrastructure/prun-ui/css/colored-value.module.css';
 
 type SortKey = 'name' | 'cargo' | 'status' | 'fuel';
 type SortDirection = 'asc' | 'desc';
@@ -136,6 +137,7 @@ const rawRows = computed(() => {
       warningFuelRatio,
       statusSortValue,
       conditionText: `${Math.round(condition)}%`,
+      conditionClass: getConditionClass(condition),
       cargoSizeText: getCargoSizeText(inventory),
       isFtlCapable,
       inFlight,
@@ -504,6 +506,16 @@ function clearFilters() {
   fuelAlertFilter.value = 'any';
 }
 
+function getConditionClass(condition: number) {
+  if (Math.floor(condition) <= 79) {
+    return C.ColoredValue.negative;
+  }
+  if (Math.floor(condition) <= 82) {
+    return coloredValue.warning;
+  }
+  return C.ColoredValue.positive;
+}
+
 function getShipClass(ship: PrunApi.Ship) {
   const name = ship.name?.toUpperCase() ?? '';
   const nameMatch =
@@ -668,7 +680,7 @@ function getCargoState(cargoRatio: number) {
             <span :class="C.Link.link" @click="showBuffer(`SFC ${x.ship.registration}`)">
               {{ x.ship.name || x.ship.registration }}
             </span>
-            <span :class="C.ColoredValue.positive">&nbsp;{{ x.conditionText }}</span>
+            <span :class="x.conditionClass">&nbsp;{{ x.conditionText }}</span>
           </td>
 
           <td :class="[$style.bodyCell, $style.cargoCell]">
