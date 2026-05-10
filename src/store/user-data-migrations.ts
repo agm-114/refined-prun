@@ -17,6 +17,12 @@ function isCheckpoint(entry: MigrationEntry): entry is Checkpoint {
 // The date is for reference only, and it does not affect migration order.
 const migrations: MigrationEntry[] = [
   [
+    '10.05.2026 Add tab folders',
+    userData => {
+      userData.tabs.folders = [];
+    },
+  ],
+  [
     '25.04.2026 Add per-planet repair overrides',
     userData => {
       userData.settings.repair.planetOverrides = {};

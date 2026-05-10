@@ -1,5 +1,7 @@
 import $style from './screen-tab-bar.module.css';
 import TabBar from './TabBar.vue';
+import FolderCreator from './FolderCreator.vue';
+import FldrButton from './FldrButton.vue';
 import { userData } from '@src/store/user-data';
 import removeArrayElement from '@src/utils/remove-array-element';
 import { watchEffectWhileNodeAlive } from '@src/utils/watch';
@@ -68,13 +70,34 @@ function extractScreenId(url?: string) {
   return url?.match(/screen=([\w-]+)/)?.[1] ?? undefined;
 }
 
-function init() {
-  subscribe($$(document, C.ScreenControls.container), container => {
-    createFragmentApp(TabBar).appendTo(container);
+function onContainerReady(container: HTMLElement) {
+  createFragmentApp(TabBar).appendTo(container);
+  let fldrInserted = false;
+  subscribe($$(container, C.HeadItem.label), label => {
+    if (fldrInserted || label.textContent !== 'FULL') {
+      return;
+    }
+    const fullItem = label.closest(`.${C.HeadItem.container}`) as HTMLElement | null;
+    if (!fullItem) {
+      return;
+    }
+    fldrInserted = true;
+    createFragmentApp(FldrButton).before(fullItem);
   });
+}
+
+function init() {
+  subscribe($$(document, C.ScreenControls.container), onContainerReady);
   subscribe($$(document, C.ScreenControls.screens), onListReady);
   applyCssRule(`.${C.Head.contextAndScreens}`, $style.contextAndScreens);
   applyCssRule(`.${C.ScreenControls.container}`, $style.screenControls);
+  xit.add({
+    command: 'FLDR',
+    name: 'NEW FOLDER',
+    description: 'Create a new screen folder.',
+    component: () => FolderCreator,
+    bufferSize: [450, 110],
+  });
 }
 
 features.add(import.meta.url, init, 'Adds a tab bar for user screens.');
