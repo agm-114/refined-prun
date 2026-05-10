@@ -68,15 +68,6 @@ function removeScreen(screenId: string) {
   userData.tabs.order.push(screenId);
 }
 
-function deleteFolder() {
-  for (const screenId of folder.screenIds.slice()) {
-    userData.tabs.order.push(screenId);
-  }
-  removeArrayElement(userData.tabs.order, folder.id);
-  removeArrayElement(userData.tabs.folders, folder);
-  showDropdown.value = false;
-}
-
 const dropdownStyle = ref<Record<string, string>>({});
 
 watchEffect(() => {
@@ -103,26 +94,32 @@ function getScreen(id: string) {
     @mouseleave="onTabLeave"
     @dblclick.prevent="rename">
     <div :class="[C.HeadItem.container, C.fonts.fontRegular, C.type.typeRegular]">
-      <span :class="[C.HeadItem.label, C.links.textLink]">{{ folder.name }}</span>
+      <span :class="[C.HeadItem.label, $style.folderLabel]">{{ folder.name }}</span>
       <div :class="indicatorClasses" />
     </div>
   </div>
   <Teleport to="body">
     <div
-      v-if="showDropdown"
+      v-if="showDropdown && folder.screenIds.length > 0"
       :class="$style.dropdown"
       :style="dropdownStyle"
       @mouseenter="onDropdownEnter"
       @mouseleave="onDropdownLeave">
-      <a
+      <div
         v-for="screenId in folder.screenIds"
         :key="screenId"
-        :href="`#screen=${screenId}`"
-        :class="[$style.dropdownItem, screenId === currentScreenId && $style.dropdownItemActive]">
-        <span :class="$style.screenName">{{ getScreen(screenId)?.name ?? screenId }}</span>
-        <span :class="$style.removeBtn" @click.prevent="removeScreen(screenId)">×</span>
-      </a>
-      <div :class="$style.deleteFolder" @click="deleteFolder">delete folder</div>
+        :class="C.ScreenControls.screen">
+        <a
+          :href="`#screen=${screenId}`"
+          :class="[C.ScreenControls.name, screenId === currentScreenId && $style.currentScreen]">
+          {{ getScreen(screenId)?.name ?? screenId }}
+        </a>
+        <div
+          :class="[C.ScreenControls.delete, C.type.typeSmall, $style.rmvBtn]"
+          @click.prevent="removeScreen(screenId)">
+          RMV
+        </div>
+      </div>
     </div>
   </Teleport>
 </template>
@@ -133,52 +130,28 @@ function getScreen(id: string) {
   cursor: pointer;
 }
 
+.folderLabel {
+  color: #7fa8e0;
+
+  &:hover {
+    color: #7fa8e0;
+  }
+}
+
 .dropdown {
   position: fixed;
   z-index: 9999;
   background: #181818;
   border: 1px solid #333;
-  min-width: 100px;
+  min-width: 120px;
 }
 
-.dropdownItem {
-  display: flex;
-  align-items: center;
-  padding: 3px 8px;
-  text-decoration: none;
-  color: inherit;
-
-  &:hover {
-    background: #2a2a2a;
-  }
-}
-
-.dropdownItemActive .screenName {
+.currentScreen {
   color: #7fa8e0;
 }
 
-.screenName {
-  flex: 1;
-}
-
-.removeBtn {
-  margin-left: 8px;
-  cursor: pointer;
-  color: #666;
-
-  &:hover {
-    color: #e55;
-  }
-}
-
-.deleteFolder {
-  padding: 3px 8px;
-  color: #666;
-  cursor: pointer;
-  border-top: 1px solid #333;
-
-  &:hover {
-    color: #e55;
-  }
+.rmvBtn {
+  width: 26px;
+  text-align: center;
 }
 </style>

@@ -1,11 +1,11 @@
 import $style from './screen-tab-bar.module.css';
 import TabBar from './TabBar.vue';
 import FolderCreator from './FolderCreator.vue';
+import FldrButton from './FldrButton.vue';
 import { userData } from '@src/store/user-data';
 import removeArrayElement from '@src/utils/remove-array-element';
 import { watchEffectWhileNodeAlive } from '@src/utils/watch';
 import { syncState } from '@src/features/basic/screen-tab-bar/sync';
-import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 
 function onListReady(list: HTMLElement) {
   subscribe($$(list, C.ScreenControls.screen), onScreenItemReady);
@@ -70,10 +70,6 @@ function extractScreenId(url?: string) {
   return url?.match(/screen=([\w-]+)/)?.[1] ?? undefined;
 }
 
-function addFolder() {
-  void showBuffer('XIT FLDR');
-}
-
 function onContainerReady(container: HTMLElement) {
   createFragmentApp(TabBar).appendTo(container);
   let fldrInserted = false;
@@ -82,14 +78,7 @@ function onContainerReady(container: HTMLElement) {
     const fullItem = label.closest(`.${C.HeadItem.container}`) as HTMLElement | null;
     if (!fullItem) return;
     fldrInserted = true;
-    createFragmentApp(() => (
-      <div
-        class={[C.HeadItem.container, C.fonts.fontRegular, C.type.typeRegular, C.HeadItem.link]}
-        onClick={addFolder}>
-        <span class={C.HeadItem.label}>FLDR</span>
-        <div class={[C.HeadItem.indicator, C.HeadItem.indicatorPrimary]} />
-      </div>
-    )).before(fullItem);
+    createFragmentApp(FldrButton).before(fullItem);
   });
 }
 
