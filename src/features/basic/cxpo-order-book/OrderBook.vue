@@ -15,15 +15,21 @@ const { ticker, onOrderClick } = defineProps<{
 const orderBook = computed(() => cxobStore.getByTicker(ticker));
 
 const getSigFigIncrement = (num: number, n: number = 3): number => {
-  if (num === 0) return 0;
+  if (num === 0) {
+    return 0;
+  }
   const exponent = Math.floor(Math.log10(Math.abs(num)));
   return Math.pow(10, exponent - (n - 1));
 };
 
 const undercutOffer = computed(() => {
-  if (!quickPriceEnabled.value) return null;
+  if (!quickPriceEnabled.value) {
+    return null;
+  }
   const ask = orderBook.value?.ask?.price.amount;
-  if (ask === undefined) return null;
+  if (ask === undefined) {
+    return null;
+  }
   return {
     id: 'undrcut',
     limit: { amount: ask - getSigFigIncrement(ask) },
@@ -33,9 +39,13 @@ const undercutOffer = computed(() => {
 });
 
 const outbidRequest = computed(() => {
-  if (!quickPriceEnabled.value) return null;
+  if (!quickPriceEnabled.value) {
+    return null;
+  }
   const bid = orderBook.value?.bid?.price.amount;
-  if (bid === undefined) return null;
+  if (bid === undefined) {
+    return null;
+  }
   return {
     id: 'outbid',
     limit: { amount: bid + getSigFigIncrement(bid) },
