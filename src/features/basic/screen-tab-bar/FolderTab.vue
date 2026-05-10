@@ -101,7 +101,7 @@ function getScreen(id: string) {
   <Teleport to="body">
     <div
       v-if="showDropdown && folder.screenIds.length > 0"
-      :class="$style.dropdown"
+      :class="[$style.dropdown, C.fonts.fontRegular, C.type.typeRegular]"
       :style="dropdownStyle"
       @mouseenter="onDropdownEnter"
       @mouseleave="onDropdownLeave">

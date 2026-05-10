@@ -28,7 +28,7 @@ function onCreate() {
       <TextInput v-model="name" :focus-on-mount="true" />
     </Active>
     <Commands>
-      <PrunButton primary type="submit" @click="onCreate">CREATE</PrunButton>
+      <PrunButton primary type="submit">CREATE</PrunButton>
     </Commands>
   </form>
 </template>

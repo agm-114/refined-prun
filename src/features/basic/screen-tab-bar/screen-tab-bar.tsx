@@ -92,7 +92,7 @@ function init() {
     name: 'NEW FOLDER',
     description: 'Create a new screen folder.',
     component: () => FolderCreator,
-    bufferSize: [300, 110],
+    bufferSize: [450, 110],
   });
 }
 

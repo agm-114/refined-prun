@@ -82,7 +82,7 @@ watchEffect(() => {
   <Teleport to="body">
     <div
       v-if="showDropdown && userData.tabs.folders.length > 0"
-      :class="$style.dropdown"
+      :class="[$style.dropdown, C.fonts.fontRegular, C.type.typeRegular]"
       :style="dropdownStyle"
       @mouseenter="onDropdownEnter"
       @mouseleave="onDropdownLeave">
