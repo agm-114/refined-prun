@@ -8,7 +8,8 @@ import { ActionPackageConfig, configurableValue } from '@src/features/XIT/ACT/sh
 import { computeResupplyBill } from '@src/features/XIT/ACT/material-groups/resupply/bill';
 import type { MaterialFilter } from '@src/features/XIT/ACT/material-groups/resupply/config';
 import type { LogTag, LogContent } from '@src/features/XIT/ACT/runner/logger';
-import $style from './BurnActWindow.module.css';
+import Active from '@src/components/forms/Active.vue';
+import RadioItem from '@src/components/forms/RadioItem.vue';
 
 // Join all parameters in case a naturalId was split on underscores by the XIT router.
 const parameters = useXitParameters();
@@ -139,12 +140,9 @@ function afterExecute(
   <div v-if="!planetName">Planet "{{ naturalId }}" not found.</div>
   <ExecuteActionPackage v-else :pkg="pkg" :after-execute="afterExecute">
     <template #extra>
-      <div :class="$style.jsonOption">
-        <label>
-          <input type="checkbox" v-model="generateReturnJson" />
-          Generate Return JSON
-        </label>
-      </div>
+      <Active label="Generate Return JSON">
+        <RadioItem v-model="generateReturnJson">generate return json</RadioItem>
+      </Active>
     </template>
   </ExecuteActionPackage>
 </template>
