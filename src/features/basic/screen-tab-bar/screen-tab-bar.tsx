@@ -68,10 +68,32 @@ function extractScreenId(url?: string) {
   return url?.match(/screen=([\w-]+)/)?.[1] ?? undefined;
 }
 
-function init() {
-  subscribe($$(document, C.ScreenControls.container), container => {
-    createFragmentApp(TabBar).appendTo(container);
+function addFolder() {
+  const n = userData.tabs.folders.length + 1;
+  const id = `fldr-${Math.random().toString(36).slice(2, 9)}`;
+  userData.tabs.folders.push({ id, name: `FLDR ${n}`, screenIds: [] });
+  userData.tabs.order.push(id);
+}
+
+function onContainerReady(container: HTMLElement) {
+  createFragmentApp(TabBar).appendTo(container);
+  subscribe($$(container, C.HeadItem.label), label => {
+    if (label.textContent !== 'FULL') return;
+    const fullItem = label.closest(`.${C.HeadItem.container}`) as HTMLElement | null;
+    if (!fullItem || fullItem.parentElement !== container) return;
+    createFragmentApp(() => (
+      <div
+        class={[C.HeadItem.container, C.fonts.fontRegular, C.type.typeRegular, C.HeadItem.link]}
+        onClick={addFolder}>
+        <span class={C.HeadItem.label}>FLDR</span>
+        <div class={[C.HeadItem.indicator, C.HeadItem.indicatorPrimary]} />
+      </div>
+    )).before(fullItem);
   });
+}
+
+function init() {
+  subscribe($$(document, C.ScreenControls.container), onContainerReady);
   subscribe($$(document, C.ScreenControls.screens), onListReady);
   applyCssRule(`.${C.Head.contextAndScreens}`, $style.contextAndScreens);
   applyCssRule(`.${C.ScreenControls.container}`, $style.screenControls);

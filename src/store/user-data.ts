@@ -71,6 +71,7 @@ export const initialUserData = deepFreeze({
     order: [] as string[],
     hidden: [] as string[],
     locked: [] as string[],
+    folders: [] as UserData.TabFolder[],
   },
   commandLists: [] as UserData.CommandList[],
   linkedBuffersPresets: [] as UserData.LinkedBuffersPreset[],

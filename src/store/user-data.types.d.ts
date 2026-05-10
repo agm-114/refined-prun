@@ -155,4 +155,10 @@ declare namespace UserData {
     width: number;
     height: number;
   }
+
+  interface TabFolder {
+    id: string;
+    name: string;
+    screenIds: string[];
+  }
 }
