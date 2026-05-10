@@ -5,7 +5,7 @@ export const initialUserData = deepFreeze({
   tileState: {} as Record<string, UserData.TileState | undefined>,
   settings: {
     mode: undefined as 'BASIC' | 'FULL' | undefined,
-    disabled: ['oog-burn-inflight-inventory'] as string[],
+    disabled: ['oog-burn-inflight-inventory', 'oog-cxpo-quick-price'] as string[],
     time: 'DEFAULT' as UserData.TimeFormat,
     defaultChartType: 'SMOOTH' as UserData.ExchangeChartType,
     currency: {
