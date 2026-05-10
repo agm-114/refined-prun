@@ -12,7 +12,10 @@ import { act } from '@src/features/XIT/ACT/act-registry';
 
 const { pkg, afterExecute } = defineProps<{
   pkg: UserData.ActionPackageData;
-  afterExecute?: (config: ActionPackageConfig) => string | undefined;
+  afterExecute?: (
+    config: ActionPackageConfig,
+    log: (tag: LogTag, message: LogContent) => void,
+  ) => void;
 }>();
 
 const tile = useTile();
@@ -95,10 +98,7 @@ const runner = new ActionRunner({
   onEnd: () => {
     isRunning.value = false;
     status.value = undefined;
-    const extra = afterExecute?.(config.value);
-    if (extra !== undefined) {
-      logMessage(null, extra);
-    }
+    afterExecute?.(config.value, logMessage);
   },
   onStatusChanged: (title, keepReady) => {
     status.value = title;

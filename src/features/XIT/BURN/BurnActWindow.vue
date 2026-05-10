@@ -7,6 +7,7 @@ import { getEntityNameFromAddress } from '@src/infrastructure/prun-api/data/addr
 import { ActionPackageConfig, configurableValue } from '@src/features/XIT/ACT/shared-types';
 import { computeResupplyBill } from '@src/features/XIT/ACT/material-groups/resupply/bill';
 import type { MaterialFilter } from '@src/features/XIT/ACT/material-groups/resupply/config';
+import type { LogTag, LogContent } from '@src/features/XIT/ACT/runner/logger';
 import $style from './BurnActWindow.module.css';
 
 // Join all parameters in case a naturalId was split on underscores by the XIT router.
@@ -72,15 +73,18 @@ const pkg = computed(
 
 const generateReturnJson = ref(false);
 
-function afterExecute(pkgConfig: ActionPackageConfig): string | undefined {
+function afterExecute(
+  pkgConfig: ActionPackageConfig,
+  log: (tag: LogTag, message: LogContent) => void,
+): void {
   if (!generateReturnJson.value) {
-    return undefined;
+    return;
   }
 
   const resupplyGroup = pkg.value.groups[0];
   const mtraAction = pkg.value.actions.find(x => x.type === 'MTRA');
   if (!resupplyGroup || !mtraAction) {
-    return undefined;
+    return;
   }
 
   const groupName = resupplyGroup.name!;
@@ -126,7 +130,8 @@ function afterExecute(pkgConfig: ActionPackageConfig): string | undefined {
     ],
   };
 
-  return JSON.stringify(result, null, 2);
+  log('INFO', 'Auto Offload JSON:');
+  log(null, JSON.stringify(result, null, 2));
 }
 </script>
 
