@@ -377,6 +377,8 @@ const naturalId = getEntityNaturalIdFromAddress(site?.address);
 
 Avoid matching on localized text (like "Weight", "Volume"). Use element index or `PrunI18N` lookup instead.
 
+**Exception — fixed structural UI labels:** Matching `textContent` is acceptable for identifying fixed structural UI rows (e.g. project-type rows in `C.PlanetaryProjectsList.row`) because PrUn is English-only and these labels are static game UI strings, not user-generated game entity names. Do not extend this exception to anything that could change with a game update or user action.
+
 ### Reactivity
 
 **Prefer `computed` over `watch`/`watchEffect`.** Thinking in computed produces more compact and readable code.
