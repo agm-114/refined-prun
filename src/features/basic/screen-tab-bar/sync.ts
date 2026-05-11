@@ -32,6 +32,12 @@ export function syncState() {
     }
   }
 
+  for (let i = order.length - 1; i >= 0; i--) {
+    if (screensInFolders.has(order[i])) {
+      order.splice(i, 1);
+    }
+  }
+
   for (const id of hidden.slice()) {
     if (!existingScreenIds.has(id)) {
       removeArrayElement(hidden, id);
