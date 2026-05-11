@@ -12,6 +12,8 @@
 
 ### Changed
 
+- `XIT ACT`: Filter destination list based on selected origin in `MTRA` configuration
+- `XIT BURN`: Add PROD, WF, and I/O filter buttons
 - `XIT CONTC`: Show an address link in the "Contribute" condition
 - `cxpo-order-book`: Add a delete button to own orders
 - `minimize-headers`: Enable header minimization in `POPID` tiles
