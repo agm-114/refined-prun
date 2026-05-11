@@ -12,6 +12,7 @@
 
 - `XIT CONTC`: Show an address link in the "Contribute" condition
 - `cxpo-order-book`: Add a delete button to own orders
+- `minimize-headers`: Enable header minimization in `POPID` tiles
 - `nots-notification-type-label`: Add labels for new notification types
 
 ### Fixed
