@@ -4,6 +4,9 @@
 
 ### Added
 
+- `XIT ELEC`: Upcoming elections for planets you have bases on
+- `XIT FXTS`: List of all your foreign exchange trades
+- `adm-hide-inactive-buttons`: Hides inactive buttons
 - `cxo-delete-order-button`: Adds a delete button
 - `cxob-delete-own-exchange-orders`: Adds a delete button to own orders
 
