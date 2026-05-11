@@ -8,6 +8,7 @@
 - `adm-hide-inactive-buttons`: Hides inactive buttons
 - `bs-warehouse-button`: Adds a "Warehouse" button
 - `inv-shpt-condition-indicator`: Adds a condition indicator to SHPT and BLCK items
+- `inv-warehouse-button`: Adds a "Warehouse" button to base inventories
 
 ### Changed
 
