@@ -17,6 +17,12 @@ function isCheckpoint(entry: MigrationEntry): entry is Checkpoint {
 // The date is for reference only, and it does not affect migration order.
 const migrations: MigrationEntry[] = [
   [
+    '11.05.2026 Rename contribution-maxed',
+    userData => {
+      renameFeature(userData, 'contribution-maxed', 'cogcu-contribution-maxed');
+    },
+  ],
+  [
     '10.05.2026 Add tab folders',
     userData => {
       userData.tabs.folders = [];
