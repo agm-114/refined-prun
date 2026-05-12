@@ -20,6 +20,7 @@
 - `XIT ACT`: Filter destination list based on selected origin in `MTRA` configuration
 - `XIT BURN`: Add PROD, WF, and I/O filter buttons
 - `XIT CONTC`: Show an address link in the "Contribute" condition
+- `audio-volume-slider`: Implement a more robust volume control mechanism
 - `minimize-headers`: Enable header minimization in `POPID` tiles
 - `nots-notification-type-label`: Add labels for new notification types
 
@@ -29,6 +30,8 @@
 - `XIT PROD`: Fix order deletion in `PRODQ` tiles opened from `XIT PROD`
 - `prun-bugs`: Prevent text selection when moving items by dragging
 
+
+## 26.5.11
 
 ## 26.3.22
 
