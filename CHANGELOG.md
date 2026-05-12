@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `XIT ELEC`: Upcoming elections for planets you have bases on
+- `adm-hide-inactive-buttons`: Hides inactive buttons
+- `bs-warehouse-button`: Adds a "Warehouse" button
+- `inv-shpt-condition-indicator`: Adds a contract condition indicator to SHPT and BLCK items
+- `inv-warehouse-button`: Adds a "Warehouse" button to base inventories
+
+### Changed
+
+- `XIT ACT`: Filter destination list based on selected origin in `MTRA` configuration
+- `XIT BURN`: Add PROD, WF, and I/O filter buttons
+- `XIT CONTC`: Show an address link in the "Contribute" condition
+- `cxpo-order-book`: Add a delete button to own orders
+- `minimize-headers`: Enable header minimization in `POPID` tiles
+- `nots-notification-type-label`: Add labels for new notification types
+
+### Fixed
+
+- `XIT ACT`: Prevent manually entered quantity/price overwrite by order book changes in CX Buy
+- `XIT PROD`: Fix order deletion in `PRODQ` tiles opened from `XIT PROD`
+- `prun-bugs`: Prevent text selection when moving items by dragging
+
 ## 26.3.22
 
 ### Added

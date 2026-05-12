@@ -5,6 +5,7 @@ import PrunButton from '@src/components/PrunButton.vue';
 import { PlanetBurn } from '@src/core/burn';
 import { countDays } from '@src/features/XIT/BURN/utils';
 import { store as planetContextMenu } from '@src/features/XIT/planet-context-menu';
+import { useTileState } from '@src/features/XIT/BURN/tile-state';
 
 const { burn } = defineProps<{
   burn: PlanetBurn;
@@ -13,13 +14,15 @@ const { burn } = defineProps<{
   onClick: () => void;
 }>();
 
+const io = useTileState('io');
 const days = computed(() => countDays(burn.burn));
+const nameColspan = computed(() => (io.value ? 6 : 4));
 </script>
 
 <template>
   <tr :class="$style.row">
     <td
-      colspan="4"
+      :colspan="nameColspan"
       :class="$style.cell"
       @click="onClick"
       @contextmenu.prevent="burn.naturalId && planetContextMenu.showMenu($event, burn.naturalId)">
