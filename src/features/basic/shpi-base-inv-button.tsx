@@ -31,11 +31,13 @@ async function onTileReady(tile: PrunTile) {
       return null;
     }
     return (
-      <button
-        class={[C.Button.btn, C.Button.primary, C.fonts.fontRegular, C.type.typeSmall]}
+      <div
+        class={[C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
         onClick={() => showBuffer(`INV ${store.id.substring(0, 8)}`)}>
-        Base Inv
-      </button>
+        <span>
+          <span class={C.ContextControls.cmd}>Base Inv</span>
+        </span>
+      </div>
     );
   }).prependTo(contextBar);
 }

@@ -26,16 +26,18 @@ async function onTileReady(tile: PrunTile) {
       return null;
     }
     return (
-      <button
-        class={[C.Button.btn, C.Button.primary, C.fonts.fontRegular, C.type.typeSmall]}
+      <div
+        class={[C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
         onClick={() => {
           if (!panelShown) {
             showPanel(tile, naturalId.value!);
             panelShown = true;
           }
         }}>
-        Analysis
-      </button>
+        <span>
+          <span class={C.ContextControls.cmd}>Analysis</span>
+        </span>
+      </div>
     );
   }).prependTo(contextBar);
 }
