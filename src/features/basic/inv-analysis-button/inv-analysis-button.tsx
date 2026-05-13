@@ -27,7 +27,7 @@ async function onTileReady(tile: PrunTile) {
     }
     return (
       <button
-        class={[C.Button.btn, C.Button.primary]}
+        class={[C.Button.btn, C.Button.primary, C.fonts.fontRegular, C.type.typeSmall]}
         onClick={() => {
           if (!panelShown) {
             showPanel(tile, naturalId.value!);

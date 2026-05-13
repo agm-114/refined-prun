@@ -26,7 +26,7 @@ async function onTileReady(tile: PrunTile) {
   };
 
   createFragmentApp(() => (
-    <button class={[C.Button.btn, C.Button.primary]} onClick={onClick}>
+    <button class={[C.Button.btn, C.Button.primary, C.fonts.fontRegular, C.type.typeSmall]} onClick={onClick}>
       Warehouse
     </button>
   )).prependTo(contextBar);
