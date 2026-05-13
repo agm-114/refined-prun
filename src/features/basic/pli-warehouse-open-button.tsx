@@ -3,7 +3,6 @@ import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import PrunButton from '@src/components/PrunButton.vue';
-import $style from './pli-warehouse-open-button.module.css';
 
 function onTileReady(tile: PrunTile) {
   subscribe($$(tile.anchor, C.PlanetaryProjectsList.row), row => {
@@ -22,9 +21,9 @@ function onTileReady(tile: PrunTile) {
 
     createFragmentApp(() => (
       <PrunButton
-        dark
+        primary
         inline
-        class={[$style.openButton, hiddenClass.value]}
+        class={hiddenClass.value}
         onClick={() => {
           const store = warehouseStore.value;
           if (store) showBuffer(`INV ${store.id.substring(0, 8)}`);

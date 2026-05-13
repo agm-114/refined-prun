@@ -1,9 +1,0 @@
-.openButton {
-  background-color: #fbd380;
-  margin-left: 4px;
-  vertical-align: middle;
-
-  &:hover {
-    background-color: #f5c660;
-  }
-}
