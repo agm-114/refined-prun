@@ -34,7 +34,7 @@ async function onTileReady(tile: PrunTile) {
             panelShown = true;
           }
         }}>
-        Analysis - XIT STO
+        Analysis
       </button>
     );
   }).prependTo(contextBar);
