@@ -6,7 +6,6 @@ import {
   getLocationLineFromAddress,
   isPlanetLine,
 } from '@src/infrastructure/prun-api/data/addresses';
-import $style from './shpi-base-inv-button.module.css';
 
 async function onTileReady(tile: PrunTile) {
   const ship = computed(() => shipsStore.getByRegistration(tile.parameter));
@@ -33,7 +32,7 @@ async function onTileReady(tile: PrunTile) {
     }
     return (
       <div
-        class={[$style.item, C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
+        class={[C.Button.primary, C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
         onClick={() => showBuffer(`INV ${store.id.substring(0, 8)}`)}>
         <span>
           <span class={C.ContextControls.cmd}>BASE INV</span>

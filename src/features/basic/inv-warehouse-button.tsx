@@ -4,7 +4,6 @@ import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { getInvStore } from '@src/core/store-id';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import { getEntityNaturalIdFromAddress } from '@src/infrastructure/prun-api/data/addresses';
-import $style from './inv-warehouse-button.module.css';
 
 async function onTileReady(tile: PrunTile) {
   if (!tile.parameter) {
@@ -28,7 +27,7 @@ async function onTileReady(tile: PrunTile) {
 
   createFragmentApp(() => (
     <div
-      class={[$style.item, C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
+      class={[C.Button.primary, C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
       onClick={onClick}>
       <span>
         <span class={C.ContextControls.cmd}>WAREHOUSE</span>
