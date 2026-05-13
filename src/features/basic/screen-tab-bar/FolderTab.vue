@@ -117,7 +117,7 @@ function getScreen(id: string) {
         </a>
         <div
           :class="[C.ScreenControls.delete, C.type.typeSmall, $style.rmvBtn]"
-          @click.prevent="removeScreen(screenId)">
+          @click.stop.prevent="removeScreen(screenId)">
           rmv
         </div>
       </div>

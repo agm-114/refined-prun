@@ -103,7 +103,7 @@ watchEffect(() => {
         <span :class="[C.ScreenControls.name, $style.folderName]">{{ folder.name }}</span>
         <div
           :class="[C.ScreenControls.delete, C.type.typeSmall, $style.delBtn]"
-          @click.prevent="deleteFolder(folder.id)">
+          @click.stop.prevent="deleteFolder(folder.id)">
           del
         </div>
       </div>

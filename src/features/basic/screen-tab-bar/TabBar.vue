@@ -76,9 +76,25 @@ function onDragMove(evt: { dragged: Element; related: Element }) {
   return true;
 }
 
-function onDragEnd() {
-  if (pendingFolderDrop.value && activeDragId && !folderMap.value.has(activeDragId)) {
-    const folder = userData.tabs.folders.find(f => f.id === pendingFolderDrop.value);
+function onDragEnd(evt: { originalEvent?: Event }) {
+  let targetFolderId = pendingFolderDrop.value;
+
+  // Prefer actual cursor position at drop time over the last onMove state,
+  // because onMove clears pendingFolderDrop when Sortable repositions the
+  // dragged element right after the folder on the same tick as the drop.
+  if (!targetFolderId && evt.originalEvent && 'clientX' in evt.originalEvent) {
+    const { clientX, clientY } = evt.originalEvent as MouseEvent;
+    for (const el of document.elementsFromPoint(clientX, clientY)) {
+      const itemId = (el as HTMLElement).dataset?.itemId;
+      if (itemId && folderMap.value.has(itemId)) {
+        targetFolderId = itemId;
+        break;
+      }
+    }
+  }
+
+  if (targetFolderId && activeDragId && !folderMap.value.has(activeDragId)) {
+    const folder = userData.tabs.folders.find(f => f.id === targetFolderId);
     if (folder) {
       removeArrayElement(userData.tabs.order, activeDragId);
       folder.screenIds.push(activeDragId);
