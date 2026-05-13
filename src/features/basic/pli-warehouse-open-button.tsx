@@ -21,13 +21,13 @@ function onTileReady(tile: PrunTile) {
       const ws = warehouseStore.value;
       if (ws) {
         return (
-          <PrunButton primary inline onClick={() => showBuffer(`INV ${ws.id.substring(0, 8)}`)}>
+          <PrunButton primary inline style={{ marginLeft: '4px' }} onClick={() => showBuffer(`INV ${ws.id.substring(0, 8)}`)}>
             OPEN
           </PrunButton>
         );
       }
       return (
-        <PrunButton primary inline onClick={() => showBuffer(`WAR ${tile.parameter}`)}>
+        <PrunButton primary inline style={{ marginLeft: '4px' }} onClick={() => showBuffer(`WAR ${tile.parameter}`)}>
           RENT
         </PrunButton>
       );
