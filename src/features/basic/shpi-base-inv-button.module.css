@@ -1,0 +1,7 @@
+.item {
+  background-color: #fbd380;
+
+  &:hover {
+    background-color: #f5c660;
+  }
+}

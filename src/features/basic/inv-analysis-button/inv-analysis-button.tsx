@@ -7,6 +7,7 @@ import { getPrunId } from '@src/infrastructure/prun-ui/attributes';
 import { UI_TILES_CHANGE_COMMAND } from '@src/infrastructure/prun-api/client-messages';
 import { dispatchClientPrunMessage } from '@src/infrastructure/prun-api/prun-api-listener';
 import StoSummaryPanel from './StoSummaryPanel.vue';
+import $style from './inv-analysis-button.module.css';
 
 async function onTileReady(tile: PrunTile) {
   const store = computed(() => getInvStore(tile.parameter));
@@ -27,7 +28,7 @@ async function onTileReady(tile: PrunTile) {
     }
     return (
       <div
-        class={[C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
+        class={[$style.item, C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
         onClick={() => {
           if (!panelShown) {
             showPanel(tile, naturalId.value!);
@@ -35,7 +36,7 @@ async function onTileReady(tile: PrunTile) {
           }
         }}>
         <span>
-          <span class={C.ContextControls.cmd}>Analysis</span>
+          <span class={C.ContextControls.cmd}>ANALYSIS</span>
         </span>
       </div>
     );
