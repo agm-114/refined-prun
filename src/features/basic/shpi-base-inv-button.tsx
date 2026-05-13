@@ -35,7 +35,7 @@ async function onTileReady(tile: PrunTile) {
         class={[C.Button.primary, C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
         onClick={() => showBuffer(`INV ${store.id.substring(0, 8)}`)}>
         <span>
-          <span class={C.ContextControls.cmd}>BASE INV</span>
+          <span class={C.ContextControls.cmd} style={{ color: 'white' }}>BASE INV</span>
         </span>
       </div>
     );

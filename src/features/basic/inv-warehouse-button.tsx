@@ -30,7 +30,7 @@ async function onTileReady(tile: PrunTile) {
       class={[C.Button.primary, C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
       onClick={onClick}>
       <span>
-        <span class={C.ContextControls.cmd}>WAREHOUSE</span>
+        <span class={C.ContextControls.cmd} style={{ color: 'white' }}>WAREHOUSE</span>
       </span>
     </div>
   )).prependTo(contextBar);

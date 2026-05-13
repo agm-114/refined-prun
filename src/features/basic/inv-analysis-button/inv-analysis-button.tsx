@@ -35,7 +35,7 @@ async function onTileReady(tile: PrunTile) {
           }
         }}>
         <span>
-          <span class={C.ContextControls.cmd}>ANALYSIS</span>
+          <span class={C.ContextControls.cmd} style={{ color: 'white' }}>ANALYSIS</span>
         </span>
       </div>
     );
