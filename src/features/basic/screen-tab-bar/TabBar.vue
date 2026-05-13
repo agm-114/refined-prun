@@ -95,9 +95,14 @@ function onDragEnd(evt: { originalEvent?: Event }) {
 
   if (targetFolderId && activeDragId && !folderMap.value.has(activeDragId)) {
     const folder = userData.tabs.folders.find(f => f.id === targetFolderId);
+    const screenId = activeDragId;
     if (folder) {
-      removeArrayElement(userData.tabs.order, activeDragId);
-      folder.screenIds.push(activeDragId);
+      folder.screenIds.push(screenId);
+      // Defer removal until after vue-draggable-plus's own model update (nextTick)
+      // so it doesn't re-insert the screen after we remove it.
+      nextTick(() => {
+        removeArrayElement(userData.tabs.order, screenId);
+      });
     }
   }
   pendingFolderDrop.value = null;
