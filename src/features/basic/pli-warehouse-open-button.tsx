@@ -1,4 +1,3 @@
-import css from '@src/utils/css-utils.module.css';
 import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
@@ -17,20 +16,22 @@ function onTileReady(tile: PrunTile) {
         .getByAddressableId(warehouse.value?.warehouseId)
         ?.find(x => x.type === 'WAREHOUSE_STORE'),
     );
-    const hiddenClass = computed(() => (warehouseStore.value ? undefined : css.hidden));
 
-    createFragmentApp(() => (
-      <PrunButton
-        primary
-        inline
-        class={hiddenClass.value}
-        onClick={() => {
-          const store = warehouseStore.value;
-          if (store) showBuffer(`INV ${store.id.substring(0, 8)}`);
-        }}>
-        OPEN
-      </PrunButton>
-    )).appendTo(row);
+    createFragmentApp(() => {
+      const ws = warehouseStore.value;
+      if (ws) {
+        return (
+          <PrunButton primary inline onClick={() => showBuffer(`INV ${ws.id.substring(0, 8)}`)}>
+            OPEN
+          </PrunButton>
+        );
+      }
+      return (
+        <PrunButton primary inline onClick={() => showBuffer(`WAR ${tile.parameter}`)}>
+          RENT
+        </PrunButton>
+      );
+    }).appendTo(row);
   });
 }
 
@@ -41,5 +42,5 @@ function init() {
 features.add(
   import.meta.url,
   init,
-  "PLI: Adds an OPEN button to the warehouse row to open the player's warehouse inventory.",
+  "PLI: Adds an OPEN/RENT button to the warehouse row depending on whether the player has a warehouse.",
 );
