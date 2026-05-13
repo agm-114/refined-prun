@@ -29,7 +29,10 @@ async function onTileReady(tile: PrunTile) {
     void showBuffer(storageId ? `INV ${storageId}` : `WAR ${id}`);
   };
 
-  createFragmentApp(() => {
+  // Insert after the analysis button (first child, prepended by inv-analysis-button)
+  // so the order is: ANALYSIS, WAR, game buttons
+  const anchorNode = contextBar.firstChild;
+  const app = createFragmentApp(() => {
     const id = naturalId.value;
     if (!id) {
       return null;
@@ -43,7 +46,13 @@ async function onTileReady(tile: PrunTile) {
         </span>
       </div>
     );
-  }).appendTo(contextBar);
+  });
+
+  if (anchorNode) {
+    app.after(anchorNode);
+  } else {
+    app.prependTo(contextBar);
+  }
 }
 
 function init() {
