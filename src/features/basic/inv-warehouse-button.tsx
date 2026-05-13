@@ -1,13 +1,11 @@
 import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
-import PrunButton from '@src/components/PrunButton.vue';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { getInvStore } from '@src/core/store-id';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import { getEntityNaturalIdFromAddress } from '@src/infrastructure/prun-api/data/addresses';
 
-function onTileReady(tile: PrunTile) {
-  // Only process INV tiles with parameter
+async function onTileReady(tile: PrunTile) {
   if (!tile.parameter) {
     return;
   }
@@ -17,6 +15,8 @@ function onTileReady(tile: PrunTile) {
     return;
   }
 
+  const contextBar = await $(tile.frame, C.ContextControls.container);
+
   const onClick = () => {
     const site = sitesStore.getById(store.addressableId);
     const naturalId = getEntityNaturalIdFromAddress(site?.address);
@@ -25,13 +25,11 @@ function onTileReady(tile: PrunTile) {
     void showBuffer(storageId ? `INV ${storageId}` : `WAR ${naturalId}`);
   };
 
-  subscribe($$(tile.anchor, C.StoreView.centered), centered => {
-    createFragmentApp(() => (
-      <PrunButton primary onClick={onClick}>
-        Warehouse
-      </PrunButton>
-    )).appendTo(centered);
-  });
+  createFragmentApp(() => (
+    <button class={[C.Button.btn, C.Button.primary]} onClick={onClick}>
+      Warehouse
+    </button>
+  )).prependTo(contextBar);
 }
 
 function init() {
