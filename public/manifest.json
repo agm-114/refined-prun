@@ -1,7 +1,7 @@
 {
-  "name": "Refined PrUn Testing Fork",
+  "name": "OOG RPrUn Test Fork",
   "version": "0.0.0",
-  "description": "Browser extension that simplifies the Prosperous Universe interface and adds useful features",
+  "description": "OOG Fork of Refined-Prun with custom additions not yet available on the base extension",
   "manifest_version": 3,
   "minimum_chrome_version": "107",
   "browser_specific_settings": {
