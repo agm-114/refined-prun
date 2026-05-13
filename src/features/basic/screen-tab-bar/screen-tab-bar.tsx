@@ -38,6 +38,11 @@ async function onScreenItemReady(item: HTMLElement) {
   }
   const copy = await $(item, C.ScreenControls.copy);
   const hidden = computed(() => userData.tabs.hidden.includes(id));
+  const inFolder = computed(() => userData.tabs.folders.some(f => f.screenIds.includes(id)));
+
+  watchEffectWhileNodeAlive(item, () => {
+    item.style.display = inFolder.value ? 'none' : '';
+  });
 
   watchEffectWhileNodeAlive(name, () => {
     if (hidden.value) {
