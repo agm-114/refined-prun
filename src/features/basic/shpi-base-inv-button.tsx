@@ -10,7 +10,7 @@ import {
 async function onTileReady(tile: PrunTile) {
   const ship = computed(() => shipsStore.getByRegistration(tile.parameter));
 
-  const baseStore = computed(() => {
+  const planetNaturalId = computed(() => {
     const s = ship.value;
     if (!s || s.flightId !== null) {
       return undefined;
@@ -19,7 +19,15 @@ async function onTileReady(tile: PrunTile) {
     if (!isPlanetLine(location)) {
       return undefined;
     }
-    const site = sitesStore.getByPlanetNaturalId(location.entity.naturalId);
+    return location.entity.naturalId;
+  });
+
+  const baseStore = computed(() => {
+    const id = planetNaturalId.value;
+    if (!id) {
+      return undefined;
+    }
+    const site = sitesStore.getByPlanetNaturalId(id);
     return storagesStore.all.value?.find(x => x.addressableId === site?.siteId);
   });
 
@@ -27,15 +35,16 @@ async function onTileReady(tile: PrunTile) {
 
   createFragmentApp(() => {
     const store = baseStore.value;
-    if (!store) {
+    const id = planetNaturalId.value;
+    if (!store || !id) {
       return null;
     }
     return (
       <div
-        class={[C.Button.primary, C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
+        class={[C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
         onClick={() => showBuffer(`INV ${store.id.substring(0, 8)}`)}>
         <span>
-          <span class={C.ContextControls.cmd} style={{ color: 'white' }}>BASE INV</span>
+          <span class={C.ContextControls.cmd}>INV {id}</span>
         </span>
       </div>
     );

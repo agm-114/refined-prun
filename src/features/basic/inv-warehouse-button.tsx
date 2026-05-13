@@ -15,25 +15,35 @@ async function onTileReady(tile: PrunTile) {
     return;
   }
 
+  const naturalId = computed(() => {
+    const site = sitesStore.getById(store.addressableId);
+    return getEntityNaturalIdFromAddress(site?.address);
+  });
+
   const contextBar = await $(tile.frame, C.ContextControls.container);
 
   const onClick = () => {
-    const site = sitesStore.getById(store.addressableId);
-    const naturalId = getEntityNaturalIdFromAddress(site?.address);
-    const warehouse = warehousesStore.getByEntityNaturalId(naturalId);
+    const id = naturalId.value;
+    const warehouse = warehousesStore.getByEntityNaturalId(id);
     const storageId = storagesStore.getById(warehouse?.storeId)?.id?.substring(0, 8);
-    void showBuffer(storageId ? `INV ${storageId}` : `WAR ${naturalId}`);
+    void showBuffer(storageId ? `INV ${storageId}` : `WAR ${id}`);
   };
 
-  createFragmentApp(() => (
-    <div
-      class={[C.Button.primary, C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
-      onClick={onClick}>
-      <span>
-        <span class={C.ContextControls.cmd} style={{ color: 'white' }}>WAREHOUSE</span>
-      </span>
-    </div>
-  )).prependTo(contextBar);
+  createFragmentApp(() => {
+    const id = naturalId.value;
+    if (!id) {
+      return null;
+    }
+    return (
+      <div
+        class={[C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
+        onClick={onClick}>
+        <span>
+          <span class={C.ContextControls.cmd}>WAR {id}</span>
+        </span>
+      </div>
+    );
+  }).appendTo(contextBar);
 }
 
 function init() {

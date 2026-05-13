@@ -27,7 +27,7 @@ async function onTileReady(tile: PrunTile) {
     }
     return (
       <div
-        class={[C.Button.primary, C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
+        class={[C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
         onClick={() => {
           if (!panelShown) {
             showPanel(tile, naturalId.value!);
@@ -35,7 +35,7 @@ async function onTileReady(tile: PrunTile) {
           }
         }}>
         <span>
-          <span class={C.ContextControls.cmd} style={{ color: 'white' }}>ANALYSIS</span>
+          <span class={C.ContextControls.cmd}>ANALYSIS</span>
         </span>
       </div>
     );
