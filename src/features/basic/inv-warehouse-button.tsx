@@ -1,13 +1,11 @@
 import { warehousesStore } from '@src/infrastructure/prun-api/data/warehouses';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
-import PrunButton from '@src/components/PrunButton.vue';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { getInvStore } from '@src/core/store-id';
 import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import { getEntityNaturalIdFromAddress } from '@src/infrastructure/prun-api/data/addresses';
 
-function onTileReady(tile: PrunTile) {
-  // Only process INV tiles with parameter
+async function onTileReady(tile: PrunTile) {
   if (!tile.parameter) {
     return;
   }
@@ -17,21 +15,44 @@ function onTileReady(tile: PrunTile) {
     return;
   }
 
-  const onClick = () => {
+  const naturalId = computed(() => {
     const site = sitesStore.getById(store.addressableId);
-    const naturalId = getEntityNaturalIdFromAddress(site?.address);
-    const warehouse = warehousesStore.getByEntityNaturalId(naturalId);
+    return getEntityNaturalIdFromAddress(site?.address);
+  });
+
+  const contextBar = await $(tile.frame, C.ContextControls.container);
+
+  const onClick = () => {
+    const id = naturalId.value;
+    const warehouse = warehousesStore.getByEntityNaturalId(id);
     const storageId = storagesStore.getById(warehouse?.storeId)?.id?.substring(0, 8);
-    void showBuffer(storageId ? `INV ${storageId}` : `WAR ${naturalId}`);
+    void showBuffer(storageId ? `INV ${storageId}` : `WAR ${id}`);
   };
 
-  subscribe($$(tile.anchor, C.StoreView.centered), centered => {
-    createFragmentApp(() => (
-      <PrunButton primary onClick={onClick}>
-        Warehouse
-      </PrunButton>
-    )).appendTo(centered);
+  // Insert after the analysis button (first child, prepended by inv-analysis-button)
+  // so the order is: ANALYSIS, WAR, game buttons
+  const anchorNode = contextBar.firstChild;
+  const app = createFragmentApp(() => {
+    const id = naturalId.value;
+    if (!id) {
+      return null;
+    }
+    return (
+      <div
+        class={[C.ContextControls.item, C.fonts.fontRegular, C.type.typeSmall]}
+        onClick={onClick}>
+        <span>
+          <span class={C.ContextControls.cmd}>WAR {id}</span>
+        </span>
+      </div>
+    );
   });
+
+  if (anchorNode) {
+    app.after(anchorNode);
+  } else {
+    app.prependTo(contextBar);
+  }
 }
 
 function init() {
