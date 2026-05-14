@@ -31,8 +31,8 @@ export function computeResupplyBill(
 
   const filter = materialFilter ?? (data.consumablesOnly ? 'Workforce' : 'All');
   const planetBurn = calculatePlanetBurn(
-    filter === 'Workforce' ? undefined : production,
-    filter === 'Production' ? undefined : workforce,
+    production,
+    workforce,
     (data.useBaseInv ?? true) ? stores : undefined,
   );
 
@@ -43,6 +43,15 @@ export function computeResupplyBill(
       continue;
     }
     const matBurn = planetBurn[ticker];
+    // For filtered modes, only include materials with primary demand type.
+    // Still use full dailyAmount so cross-demand (e.g. a workforce consumable
+    // that is also a production input) is fully accounted for.
+    if (filter === 'Workforce' && matBurn.workforce === 0) {
+      continue;
+    }
+    if (filter === 'Production' && matBurn.input === 0) {
+      continue;
+    }
     if (matBurn.dailyAmount >= 0) {
       continue;
     }
