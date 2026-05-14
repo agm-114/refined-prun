@@ -19,16 +19,12 @@ function onTileReady(tile: PrunTile) {
 
     createFragmentApp(() => {
       const ws = warehouseStore.value;
-      if (ws) {
-        return (
-          <PrunButton primary inline style={{ marginLeft: '4px' }} onClick={() => showBuffer(`INV ${ws.id.substring(0, 8)}`)}>
-            OPEN
-          </PrunButton>
-        );
+      if (!ws) {
+        return null;
       }
       return (
-        <PrunButton primary inline style={{ marginLeft: '4px' }} onClick={() => showBuffer(`WAR ${tile.parameter}`)}>
-          RENT
+        <PrunButton primary inline style={{ marginLeft: '4px' }} onClick={() => showBuffer(`INV ${ws.id.substring(0, 8)}`)}>
+          OPEN
         </PrunButton>
       );
     }).appendTo(row);
@@ -42,5 +38,5 @@ function init() {
 features.add(
   import.meta.url,
   init,
-  "PLI: Adds an OPEN/RENT button to the warehouse row depending on whether the player has a warehouse.",
+  'PLI: Adds an OPEN button to the warehouse row when the player has a warehouse.',
 );
