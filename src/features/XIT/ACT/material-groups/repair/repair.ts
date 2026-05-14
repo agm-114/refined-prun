@@ -5,7 +5,6 @@ import { getBuildingLastRepair, sitesStore } from '@src/infrastructure/prun-api/
 import { isRepairableBuilding } from '@src/core/buildings';
 import { Config } from '@src/features/XIT/ACT/material-groups/repair/config';
 import { configurableValue } from '@src/features/XIT/ACT/shared-types';
-import { userData } from '@src/store/user-data';
 
 act.addMaterialGroup<Config>({
   type: 'Repair',
@@ -101,10 +100,6 @@ act.addMaterialGroup<Config>({
           parsedGroup[ticker] = amount;
         }
       }
-    }
-    const noBuy = userData.settings.noBuy;
-    for (const ticker of noBuy) {
-      delete parsedGroup[ticker];
     }
     return parsedGroup;
   },

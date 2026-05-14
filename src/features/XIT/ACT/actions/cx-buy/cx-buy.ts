@@ -6,6 +6,7 @@ import { CXPO_BUY } from '@src/features/XIT/ACT/action-steps/CXPO_BUY';
 import { fixed0, fixed02 } from '@src/utils/format';
 import { fillAmount } from '@src/features/XIT/ACT/actions/cx-buy/utils';
 import { AssertFn, configurableValue } from '@src/features/XIT/ACT/shared-types';
+import { userData } from '@src/store/user-data';
 
 act.addAction<Config>({
   type: 'CX Buy',
@@ -66,7 +67,11 @@ act.addAction<Config>({
       }
     }
 
+    const noBuy = new Set(userData.settings.noBuy);
     for (const ticker of Object.keys(materials)) {
+      if (noBuy.has(ticker)) {
+        continue;
+      }
       const amount = materials[ticker];
       const priceLimit = data.priceLimits?.[ticker] ?? Infinity;
       if (isNaN(priceLimit)) {

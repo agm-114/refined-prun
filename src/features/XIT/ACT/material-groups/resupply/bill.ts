@@ -4,7 +4,6 @@ import { workforcesStore } from '@src/infrastructure/prun-api/data/workforces';
 import { productionStore } from '@src/infrastructure/prun-api/data/production';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import type { MaterialFilter } from './config';
-import { userData } from '@src/store/user-data';
 
 // Computes the resupply material bill for a given planet and day count.
 // Returns undefined when inputs are missing or when the site's burn data is
@@ -38,10 +37,9 @@ export function computeResupplyBill(
   );
 
   const exclusions = data.exclusions ?? [];
-  const noBuy = userData.settings.noBuy;
   const bill: Record<string, number> = {};
   for (const ticker of Object.keys(planetBurn)) {
-    if (exclusions.includes(ticker) || noBuy.includes(ticker)) {
+    if (exclusions.includes(ticker)) {
       continue;
     }
     const matBurn = planetBurn[ticker];
