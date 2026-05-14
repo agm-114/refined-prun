@@ -23,7 +23,10 @@ onApiMessage({
     if (data.path[0] !== 'planets' || data.path.length !== 2) {
       return;
     }
-    store.updateOne({ naturalId: data.body.naturalId, cogcProgramType: data.body.cogcProgramType });
+    const existing = state.getById(data.body.naturalId);
+    if (existing) {
+      store.updateOne({ ...existing, cogcProgramType: data.body.cogcProgramType });
+    }
   },
 });
 
