@@ -1,29 +1,23 @@
 import { clickElement } from '@src/util';
 import { refAnimationFrame } from '@src/utils/reactive-dom';
+import PrunButton from '@src/components/PrunButton.vue';
 
 async function onTileReady(tile: PrunTile) {
-  const contextBar = await $(tile.frame, C.ContextControls.container);
+  await $(tile.anchor, C.Button.btn);
+
   const nextBtn = refAnimationFrame(tile.anchor, () => getNextFulfillButton(tile.anchor));
 
   createFragmentApp(() => (
-    <div
-      class={[
-        C.ContextControls.item,
-        C.fonts.fontRegular,
-        C.type.typeSmall,
-        !nextBtn.value && C.colors.textDisabled,
-      ]}
+    <PrunButton
+      primary
+      disabled={!nextBtn.value}
       onClick={() => {
         const btn = nextBtn.value;
-        if (btn) {
-          void clickElement(btn);
-        }
+        if (btn) void clickElement(btn);
       }}>
-      <span>
-        <span class={C.ContextControls.cmd}>FULFILL NEXT</span>
-      </span>
-    </div>
-  )).prependTo(contextBar);
+      FULFILL NEXT
+    </PrunButton>
+  )).prependTo(tile.anchor);
 }
 
 function getNextFulfillButton(anchor: Element): HTMLElement | undefined {
