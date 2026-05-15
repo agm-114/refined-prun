@@ -16,7 +16,9 @@ async function onTileReady(tile: PrunTile) {
 
   async function onClick() {
     const btn = nextBtn.value;
-    if (!btn) return;
+    if (!btn) {
+      return;
+    }
 
     await clickElement(btn);
 
