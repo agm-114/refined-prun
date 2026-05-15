@@ -489,6 +489,31 @@ createFragmentApp(() => (
 )).prependTo(contextBar);
 ```
 
+For items that need a reactive **grayed-out** state (always visible, disabled when nothing to act on), add `C.colors.textDisabled` conditionally and guard inside `onClick`:
+
+```tsx
+import { refAnimationFrame } from '@src/utils/reactive-dom';
+
+const canAct = refAnimationFrame(tile.anchor, () => /* boolean check */);
+
+createFragmentApp(() => (
+  <div
+    class={[
+      C.ContextControls.item,
+      C.fonts.fontRegular,
+      C.type.typeSmall,
+      !canAct.value && C.colors.textDisabled,
+    ]}
+    onClick={() => {
+      if (canAct.value) doSomething();
+    }}>
+    <span>
+      <span class={C.ContextControls.cmd}>Label</span>
+    </span>
+  </div>
+)).prependTo(contextBar);
+```
+
 ---
 
 ## CSS
