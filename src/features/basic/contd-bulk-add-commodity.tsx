@@ -10,8 +10,12 @@ function findAddButton(anchor: Element) {
 }
 
 function onTileReady(tile: PrunTile) {
-  subscribe($$(tile.anchor, C.TemplateSelection.buttons), async buttons => {
-    const addBtn = (await $(buttons, 'button')) as HTMLElement;
+  subscribe($$(tile.anchor, 'button'), btn => {
+    const t = (btn as HTMLButtonElement).textContent?.trim().toLowerCase();
+    if (t !== 'add commodity' && t !== 'add shipment') {
+      return;
+    }
+    const addBtn = btn as HTMLElement;
 
     const countInput = document.createElement('input');
     countInput.type = 'number';
