@@ -47,13 +47,8 @@ function onInputKeydown(ev: KeyboardEvent) {
 
 <template>
   <SectionHeader>No-Buy List</SectionHeader>
-  <Passive v-if="userData.settings.noBuy.length === 0" label="Materials">
-    None
-  </Passive>
-  <Passive
-    v-for="ticker in userData.settings.noBuy"
-    :key="ticker"
-    :label="ticker">
+  <Passive v-if="userData.settings.noBuy.length === 0" label="Materials"> None </Passive>
+  <Passive v-for="ticker in userData.settings.noBuy" :key="ticker" :label="ticker">
     <PrunButton danger @click="remove(ticker)">x</PrunButton>
   </Passive>
   <SectionHeader>Add Materials</SectionHeader>

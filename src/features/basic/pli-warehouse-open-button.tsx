@@ -23,7 +23,11 @@ function onTileReady(tile: PrunTile) {
         return null;
       }
       return (
-        <PrunButton primary inline style={{ marginLeft: '4px' }} onClick={() => showBuffer(`INV ${ws.id.substring(0, 8)}`)}>
+        <PrunButton
+          primary
+          inline
+          style={{ marginLeft: '4px' }}
+          onClick={() => showBuffer(`INV ${ws.id.substring(0, 8)}`)}>
           OPEN
         </PrunButton>
       );
