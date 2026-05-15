@@ -3,21 +3,44 @@ import { refAnimationFrame } from '@src/utils/reactive-dom';
 import PrunButton from '@src/components/PrunButton.vue';
 
 async function onTileReady(tile: PrunTile) {
-  await $(tile.anchor, C.Button.btn);
+  const cmdRow = await $(tile.anchor, C.FormComponent.containerCommand);
+  const cmdInput = await $(cmdRow, C.FormComponent.input);
 
   const nextBtn = refAnimationFrame(tile.anchor, () => getNextFulfillButton(tile.anchor));
 
   createFragmentApp(() => (
-    <PrunButton
-      primary
-      disabled={!nextBtn.value}
-      onClick={() => {
-        const btn = nextBtn.value;
-        if (btn) void clickElement(btn);
-      }}>
+    <PrunButton primary disabled={!nextBtn.value} onClick={onClick}>
       FULFILL NEXT
     </PrunButton>
-  )).prependTo(tile.anchor);
+  )).prependTo(cmdInput);
+
+  async function onClick() {
+    const btn = nextBtn.value;
+    if (!btn) return;
+
+    await clickElement(btn);
+
+    const overlay = await $(tile.frame, C.ActionFeedback.overlay);
+    await waitUntilDone(overlay);
+    if (overlay.classList.contains(C.ActionFeedback.success)) {
+      await clickElement(overlay);
+    }
+  }
+}
+
+async function waitUntilDone(overlay: Element) {
+  if (!overlay.classList.contains(C.ActionFeedback.progress)) {
+    return;
+  }
+  await new Promise<void>(resolve => {
+    const observer = new MutationObserver(() => {
+      if (!overlay.classList.contains(C.ActionFeedback.progress)) {
+        observer.disconnect();
+        resolve();
+      }
+    });
+    observer.observe(overlay, { attributes: true });
+  });
 }
 
 function getNextFulfillButton(anchor: Element): HTMLElement | undefined {
