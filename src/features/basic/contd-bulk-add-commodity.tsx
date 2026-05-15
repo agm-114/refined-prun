@@ -24,12 +24,19 @@ function onTileReady(tile: PrunTile) {
     countInput.className = $style.countInput;
     addBtn.before(countInput);
 
+    let running = false;
     addBtn.addEventListener('click', async () => {
-      const n = Math.max(1, parseInt(countInput.value, 10) || 1);
-      for (let i = 1; i < n; i++) {
-        const expected = _$$(tile.anchor, C.TemplateSelection.group).length + 1;
-        await waitForGroups(tile.anchor, expected);
-        await clickElement(findAddButton(tile.anchor));
+      if (running) return;
+      running = true;
+      try {
+        const n = Math.max(1, parseInt(countInput.value, 10) || 1);
+        for (let i = 1; i < n; i++) {
+          const expected = _$$(tile.anchor, C.TemplateSelection.group).length + 1;
+          await waitForGroups(tile.anchor, expected);
+          await clickElement(findAddButton(tile.anchor));
+        }
+      } finally {
+        running = false;
       }
     });
   });
