@@ -26,10 +26,13 @@ function onTileReady(tile: PrunTile) {
 
     let running = false;
     addBtn.addEventListener('click', async () => {
-      if (running) return;
+      if (running) {
+        return;
+      }
       running = true;
       try {
-        const n = Math.max(1, parseInt(countInput.value, 10) || 1);
+        const parsed = parseInt(countInput.value, 10);
+        const n = Math.max(1, isNaN(parsed) ? 1 : parsed);
         for (let i = 1; i < n; i++) {
           const expected = _$$(tile.anchor, C.TemplateSelection.group).length + 1;
           await waitForGroups(tile.anchor, expected);
