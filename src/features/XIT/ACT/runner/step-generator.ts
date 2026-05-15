@@ -100,7 +100,7 @@ export class StepGenerator {
     }
     const planet = group.planet;
     if (!planet) {
-      this.log.error(`Material group [${name}] has no planet configured`);
+      this.log.warning(`Material group [${name}] has no planet configured`);
       return undefined;
     }
     if (planet === configurableValue) {
