@@ -458,6 +458,8 @@ async function setTileCommand(child: Element, command: string) {
 
 See also `src/features/XIT/ACT/runner/tile-allocator.ts` for the full horizontal-split companion pattern used by ACT.
 
+> **Note:** `openCompanionBuffer` + `setChildCommand` (horizontal variant of the above) is duplicated across `inv-analysis-button.tsx`, `shpi-base-inv-button.tsx`, and `shpi-warehouse-button.tsx`. Consider extracting to a shared utility in `buffers.ts` if a fourth caller appears.
+
 ---
 
 ## Context Controls
