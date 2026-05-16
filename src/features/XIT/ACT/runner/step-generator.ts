@@ -100,7 +100,7 @@ export class StepGenerator {
     }
     const planet = group.planet;
     if (!planet) {
-      this.log.warning(`Material group [${name}] has no planet configured`);
+      this.log.warning(`Material group [${name}] has no planet configured; auto SFC will not run`);
       return undefined;
     }
     if (planet === configurableValue) {
