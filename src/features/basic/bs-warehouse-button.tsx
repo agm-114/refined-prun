@@ -39,8 +39,10 @@ async function openCompanionBuffer(tile: PrunTile, command: string) {
   const windowEl = tile.frame.closest(`.${C.Window.window}`) as HTMLElement | null;
 
   if (tile.container.classList.contains(C.Window.body)) {
-    const w = parseInt(tile.container.style.width, 10) || 600;
-    const h = parseInt(tile.container.style.height, 10) || 400;
+    const parsedW = parseInt(tile.container.style.width, 10);
+    const parsedH = parseInt(tile.container.style.height, 10);
+    const w = Number.isNaN(parsedW) ? 600 : parsedW;
+    const h = Number.isNaN(parsedH) ? 400 : parsedH;
     setBufferSize(tile.id, w + 450, h);
 
     const splitButton = _$$(tile.frame, C.TileControls.control).find(x => x.textContent === '|');
