@@ -507,10 +507,10 @@ function clearFilters() {
 }
 
 function getConditionClass(condition: number) {
-  if (Math.floor(condition) <= 79) {
+  if (Math.round(condition) <= 79) {
     return C.ColoredValue.negative;
   }
-  if (Math.floor(condition) <= 82) {
+  if (Math.round(condition) <= 82) {
     return coloredValue.warning;
   }
   return C.ColoredValue.positive;
