@@ -4,7 +4,7 @@ import Configure from '@src/features/XIT/ACT/actions/mtra/Configure.vue';
 import { MTRA_TRANSFER } from '@src/features/XIT/ACT/action-steps/MTRA_TRANSFER';
 import { OPEN_SFC } from '@src/features/XIT/ACT/action-steps/OPEN_SFC';
 import { atSameLocation, deserializeStorage } from '@src/features/XIT/ACT/actions/utils';
-import { Config } from '@src/features/XIT/ACT/actions/mtra/config';
+import { Config, CX_BUY_ONLY_DEST } from '@src/features/XIT/ACT/actions/mtra/config';
 import { AssertFn, configurableValue } from '@src/features/XIT/ACT/shared-types';
 
 act.addAction<Config>({
@@ -23,6 +23,9 @@ act.addAction<Config>({
       action.dest == configurableValue
         ? (config?.destination ?? 'configured location')
         : action.dest;
+    if (dest === CX_BUY_ONLY_DEST) {
+      return `CX Buy only [${action.group}] from ${origin} (no transfer)`;
+    }
     return `Transfer group [${action.group}] from ${origin} to ${dest}`;
   },
   editComponent: Edit,
@@ -55,6 +58,9 @@ act.addAction<Config>({
     assert(origin, 'Invalid origin');
 
     const serializedDest = data.dest === configurableValue ? config?.destination : data.dest;
+    if (serializedDest === CX_BUY_ONLY_DEST) {
+      return;
+    }
     const dest = deserializeStorage(serializedDest);
     assert(dest, 'Invalid destination');
 
