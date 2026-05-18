@@ -11,6 +11,7 @@
   "scripts": {
     "compile": "tsc --noEmit",
     "build": "pnpm run clean && pnpm run compile && vite build",
+    "build:fast": "pnpm run clean && vite build",
     "build:firefox": "bash scripts/build-firefox.sh",
     "sign:firefox": "web-ext sign --source-dir dist --channel=unlisted",
     "clean": "rimraf dist",

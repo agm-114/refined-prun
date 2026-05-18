@@ -27,18 +27,11 @@ jobs:
         with:
           lfs: true
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: 'pnpm'
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build extension
-        run: pnpm build
+        run: pnpm run build:fast
 
       - name: Restart Edge with new build
         shell: powershell
