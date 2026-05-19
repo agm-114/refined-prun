@@ -34,6 +34,7 @@ export function computeResupplyBill(
     production,
     workforce,
     (data.useBaseInv ?? true) ? stores : undefined,
+    true,
   );
 
   const exclusions = data.exclusions ?? [];
