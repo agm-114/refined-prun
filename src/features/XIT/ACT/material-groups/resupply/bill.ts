@@ -3,7 +3,6 @@ import { sitesStore } from '@src/infrastructure/prun-api/data/sites';
 import { workforcesStore } from '@src/infrastructure/prun-api/data/workforces';
 import { productionStore } from '@src/infrastructure/prun-api/data/production';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
-import { resupplyOptimalEfficiency } from '@src/features/basic/act-resupply-optimal-efficiency';
 import type { MaterialFilter } from './config';
 
 // Computes the resupply material bill for a given planet and day count.
@@ -35,7 +34,6 @@ export function computeResupplyBill(
     production,
     workforce,
     (data.useBaseInv ?? true) ? stores : undefined,
-    resupplyOptimalEfficiency.value,
   );
 
   const exclusions = data.exclusions ?? [];

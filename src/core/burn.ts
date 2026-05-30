@@ -113,59 +113,10 @@ export function getPlanetBurn(siteOrId?: PrunApi.Site | string | null) {
   return burnBySiteId.value?.get(site.siteId)?.value;
 }
 
-function getOptimalEfficiencyRatio(
-  line: PrunApi.ProductionLine,
-  workforces: PrunApi.Workforce[] | undefined,
-): number {
-  if (!workforces || workforces.length === 0 || line.workforces.length === 0) {
-    return 1;
-  }
-
-  const currentEfficiency = line.efficiency;
-  if (currentEfficiency === 0) {
-    return 1;
-  }
-
-  let optimalWorkforceComponent = 1;
-  let workforceCount = 0;
-
-  for (const lineWorkforce of line.workforces) {
-    const tierData = workforces.find(w => w.level === lineWorkforce.level);
-    if (!tierData) {
-      continue;
-    }
-
-    const currentTierEfficiency = lineWorkforce.efficiency;
-    const satisfaction = tierData.satisfaction;
-
-    if (satisfaction > 0 && currentTierEfficiency > 0) {
-      const optimalTierEfficiency = currentTierEfficiency / satisfaction;
-      optimalWorkforceComponent *= optimalTierEfficiency;
-      workforceCount++;
-    }
-  }
-
-  if (workforceCount === 0) {
-    return 1;
-  }
-
-  optimalWorkforceComponent = Math.pow(optimalWorkforceComponent, 1 / workforceCount);
-
-  const listedFactorsProduct = line.efficiencyFactors.reduce(
-    (acc, factor) => acc * (1 + factor.value),
-    1,
-  );
-
-  const optimalEfficiency = listedFactorsProduct * optimalWorkforceComponent;
-
-  return currentEfficiency / optimalEfficiency;
-}
-
 export function calculatePlanetBurn(
   production: PrunApi.ProductionLine[] | undefined,
   workforces: PrunApi.Workforce[] | undefined,
   storage: PrunApi.Store[] | undefined,
-  useOptimalEfficiency: boolean = false,
 ) {
   const burnValues: BurnValues = {};
 
@@ -189,11 +140,6 @@ export function calculatePlanetBurn(
       let totalDuration = sumBy(burnOrders, x => x.duration?.millis ?? Infinity);
       // Convert to days
       totalDuration /= 86400000;
-
-      if (useOptimalEfficiency) {
-        const efficiencyRatio = getOptimalEfficiencyRatio(line, workforces);
-        totalDuration *= efficiencyRatio;
-      }
 
       for (const order of burnOrders) {
         for (const mat of order.outputs) {
