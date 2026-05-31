@@ -71,7 +71,7 @@ function onTileReady(tile: PrunTile) {
         if (!ticker) {
           return;
         }
-        void openCompanionBuffer(tile, `POPID ${tile.parameter} ${ticker}`);
+        void openCompanionBuffer(tile, `POPID P-${tile.parameter} T-${ticker}`);
       });
     });
   });
