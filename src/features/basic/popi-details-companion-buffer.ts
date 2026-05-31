@@ -34,9 +34,11 @@ function buildNameToTicker(): Map<string, string> {
 }
 
 function getRowName(row: Element): string | undefined {
-  const nameCell = _$$(row, 'td')[0];
-  if (!nameCell) return undefined;
-  const clone = nameCell.cloneNode(true) as HTMLElement;
+  const cells = _$$(row, 'td');
+  if (cells.length === 0) {
+    return undefined;
+  }
+  const clone = cells[0].cloneNode(true) as HTMLElement;
   _$(clone, C.BtnOpen.btnOpen)?.remove();
   return clone.textContent?.trim() || undefined;
 }
@@ -46,19 +48,29 @@ function onTileReady(tile: PrunTile) {
 
   subscribe($$(tile.anchor, C.Population.table), table => {
     subscribe($$(table, 'tr'), row => {
-      if (_$(row, 'th') !== undefined) return;
+      if (_$(row, 'th') !== undefined) {
+        return;
+      }
 
       const detailsBtn = _$$(row, C.Button.btn).find(x => x.textContent === 'details');
-      if (!detailsBtn) return;
+      if (!detailsBtn) {
+        return;
+      }
 
       detailsBtn.addEventListener('click', (e: MouseEvent) => {
-        if (!e.shiftKey) return;
+        if (!e.shiftKey) {
+          return;
+        }
         e.stopPropagation();
         e.preventDefault();
         const name = getRowName(row);
-        if (!name) return;
+        if (!name) {
+          return;
+        }
         const ticker = nameToTicker.get(name);
-        if (!ticker) return;
+        if (!ticker) {
+          return;
+        }
         void openCompanionBuffer(tile, `POPID ${tile.parameter} ${ticker}`);
       });
     });
@@ -78,7 +90,9 @@ async function openCompanionBuffer(tile: PrunTile, command: string) {
     const splitButton = _$$(tile.frame, C.TileControls.control).find(x => x.textContent === '|');
     await clickElement(splitButton);
 
-    if (!windowEl) return;
+    if (!windowEl) {
+      return;
+    }
 
     const node = await $(windowEl, C.Node.node);
     const companion = _$$(node, C.Node.child)[1] as HTMLElement | undefined;
@@ -96,7 +110,9 @@ async function openCompanionBuffer(tile: PrunTile, command: string) {
 
 async function setChildCommand(child: Element, command: string) {
   const tileEl = _$(child, C.Tile.tile) as HTMLElement | null;
-  if (!tileEl) return;
+  if (!tileEl) {
+    return;
+  }
 
   const id = getPrunId(tileEl)!;
   const message = UI_TILES_CHANGE_COMMAND(id, command);
