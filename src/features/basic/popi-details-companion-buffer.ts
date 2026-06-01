@@ -64,6 +64,12 @@ function onTileReady(tile: PrunTile) {
         e.stopPropagation();
         e.preventDefault();
         const name = getRowName(row);
+        console.log(
+          '[popi-companion] name:',
+          name,
+          '| ticker:',
+          name ? nameToTicker.get(name) : '(no name)',
+        );
         if (!name) {
           return;
         }
