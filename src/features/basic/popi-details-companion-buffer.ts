@@ -37,7 +37,7 @@ function getRowName(row: Element): string | undefined {
   if (row.children.length === 0) {
     return undefined;
   }
-  const text = row.children[0].firstElementChild?.textContent?.trim();
+  const text = row.children[0].firstElementChild?.firstElementChild?.textContent?.trim();
   return text ?? undefined;
 }
 
@@ -62,9 +62,16 @@ function onTileReady(tile: PrunTile) {
         e.stopPropagation();
         e.preventDefault();
         const name = getRowName(row);
-        const matchingKeys = Object.keys(PrunI18N).filter(k => PrunI18N[k]?.[0]?.value === name);
-        console.log('[popi-companion] firstCell HTML:', row.children[0]?.outerHTML?.slice(0, 300));
-        console.log('[popi-companion] name:', name, '| PrunI18N keys:', matchingKeys);
+        const planetaryKeys = Object.keys(PrunI18N).filter(
+          k => k.includes('planetary') || k.includes('Safety'),
+        );
+        console.log('[popi-companion] name:', name);
+        console.log('[popi-companion] PrunI18N size:', Object.keys(PrunI18N).length);
+        console.log('[popi-companion] planetary/Safety keys sample:', planetaryKeys.slice(0, 10));
+        console.log(
+          '[popi-companion] tr attributes:',
+          Array.from(row.attributes).map(a => `${a.name}=${a.value}`),
+        );
         if (!name) {
           return;
         }
