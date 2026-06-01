@@ -34,15 +34,11 @@ function buildNameToTicker(): Map<string, string> {
 }
 
 function getRowName(row: Element): string | undefined {
-  const cells = _$$(row, 'td');
-  if (cells.length === 0) {
+  if (row.children.length === 0) {
     return undefined;
   }
-  const clone = cells[0].cloneNode(true) as HTMLElement;
-  for (const child of Array.from(clone.children)) {
-    child.remove();
-  }
-  return clone.textContent?.trim() || undefined;
+  const text = row.children[0].firstElementChild?.textContent?.trim();
+  return text ?? undefined;
 }
 
 function onTileReady(tile: PrunTile) {
@@ -67,12 +63,8 @@ function onTileReady(tile: PrunTile) {
         e.preventDefault();
         const name = getRowName(row);
         const matchingKeys = Object.keys(PrunI18N).filter(k => PrunI18N[k]?.[0]?.value === name);
-        console.log(
-          '[popi-companion] name:',
-          name,
-          '| PrunI18N keys with that value:',
-          matchingKeys,
-        );
+        console.log('[popi-companion] firstCell HTML:', row.children[0]?.outerHTML?.slice(0, 300));
+        console.log('[popi-companion] name:', name, '| PrunI18N keys:', matchingKeys);
         if (!name) {
           return;
         }
