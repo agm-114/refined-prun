@@ -39,7 +39,9 @@ function getRowName(row: Element): string | undefined {
     return undefined;
   }
   const clone = cells[0].cloneNode(true) as HTMLElement;
-  _$(clone, C.BtnOpen.btnOpen)?.remove();
+  for (const child of Array.from(clone.children)) {
+    child.remove();
+  }
   return clone.textContent?.trim() || undefined;
 }
 
@@ -64,11 +66,12 @@ function onTileReady(tile: PrunTile) {
         e.stopPropagation();
         e.preventDefault();
         const name = getRowName(row);
+        const matchingKeys = Object.keys(PrunI18N).filter(k => PrunI18N[k]?.[0]?.value === name);
         console.log(
           '[popi-companion] name:',
           name,
-          '| ticker:',
-          name ? nameToTicker.get(name) : '(no name)',
+          '| PrunI18N keys with that value:',
+          matchingKeys,
         );
         if (!name) {
           return;
