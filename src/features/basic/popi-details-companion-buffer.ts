@@ -107,10 +107,7 @@ async function openCompanionBuffer(tile: PrunTile, command: string) {
 }
 
 async function setChildCommand(child: Element, command: string) {
-  const tileEl = _$(child, C.Tile.tile) as HTMLElement | null;
-  if (!tileEl) {
-    return;
-  }
+  const tileEl = (await $(child, C.Tile.tile)) as HTMLElement;
 
   const id = getPrunId(tileEl)!;
   const message = UI_TILES_CHANGE_COMMAND(id, command);
