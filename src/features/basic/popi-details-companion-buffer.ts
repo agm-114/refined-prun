@@ -107,15 +107,14 @@ async function openCompanionBuffer(tile: PrunTile, command: string) {
 }
 
 async function setChildCommand(child: Element, command: string) {
-  const tileEl = (await $(child, C.Tile.tile)) as HTMLElement;
-
-  const id = getPrunId(tileEl)!;
-  const message = UI_TILES_CHANGE_COMMAND(id, command);
-  if (!dispatchClientPrunMessage(message)) {
-    const input = (await $(child, C.PanelSelector.input)) as HTMLInputElement;
-    changeInputValue(input, command);
-    input.form!.requestSubmit();
+  const tileEl = _$(child, C.Tile.tile) as HTMLElement | null;
+  const id = tileEl !== null ? getPrunId(tileEl) : null;
+  if (id !== null && dispatchClientPrunMessage(UI_TILES_CHANGE_COMMAND(id, command))) {
+    return;
   }
+  const input = (await $(child, C.PanelSelector.input)) as HTMLInputElement;
+  changeInputValue(input, command);
+  input.form!.requestSubmit();
 }
 
 function init() {
