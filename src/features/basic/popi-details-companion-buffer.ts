@@ -1,9 +1,9 @@
-import { PrunI18N } from '@src/infrastructure/prun-ui/i18n';
 import { setBufferSize } from '@src/infrastructure/prun-ui/buffers';
 import { clickElement, changeInputValue } from '@src/util';
 import { getPrunId } from '@src/infrastructure/prun-ui/attributes';
 import { UI_TILES_CHANGE_COMMAND } from '@src/infrastructure/prun-api/client-messages';
 import { dispatchClientPrunMessage } from '@src/infrastructure/prun-api/prun-api-listener';
+import { PrunI18N } from '@src/infrastructure/prun-ui/i18n';
 
 const infraGlobalNames: Record<string, string> = {
   planetaryProjectSafetySmall: 'SST',
@@ -25,7 +25,7 @@ const infraGlobalNames: Record<string, string> = {
 function buildNameToTicker(): Map<string, string> {
   const map = new Map<string, string>();
   for (const [globalName, ticker] of Object.entries(infraGlobalNames)) {
-    const name = PrunI18N[globalName]?.[0]?.value;
+    const name = PrunI18N[`Reactor.${globalName}_name`]?.[0]?.value;
     if (name) {
       map.set(name, ticker);
     }
@@ -62,16 +62,6 @@ function onTileReady(tile: PrunTile) {
         e.stopPropagation();
         e.preventDefault();
         const name = getRowName(row);
-        const planetaryKeys = Object.keys(PrunI18N).filter(
-          k => k.includes('planetary') || k.includes('Safety'),
-        );
-        console.log('[popi-companion] name:', name);
-        console.log('[popi-companion] PrunI18N size:', Object.keys(PrunI18N).length);
-        console.log('[popi-companion] planetary/Safety keys sample:', planetaryKeys.slice(0, 10));
-        console.log(
-          '[popi-companion] tr attributes:',
-          Array.from(row.attributes).map(a => `${a.name}=${a.value}`),
-        );
         if (!name) {
           return;
         }
