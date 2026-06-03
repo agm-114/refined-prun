@@ -1,3 +1,4 @@
+import { $ } from '@src/utils/select-dom';
 import { setBufferSize } from '@src/infrastructure/prun-ui/buffers';
 import { clickElement, changeInputValue } from '@src/util';
 import { getPrunId } from '@src/infrastructure/prun-ui/attributes';
