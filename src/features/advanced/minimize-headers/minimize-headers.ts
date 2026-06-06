@@ -22,6 +22,16 @@ function onTileReady(tile: PrunTile) {
       }),
     ).before(header);
   });
+
+  subscribe(
+    streamHtmlCollection(
+      tile.anchor,
+      tile.anchor.getElementsByClassName(C.FormComponent.containerPassive),
+    ),
+    () => {
+      setHeaders(tile, isMinimized.value);
+    },
+  );
 }
 
 function setHeaders(tile: PrunTile, isMinimized: boolean) {
