@@ -12,9 +12,11 @@ import {
 import RadioItem from '@src/components/forms/RadioItem.vue';
 import LoadingSpinner from '@src/components/LoadingSpinner.vue';
 import InvBar from '@src/features/XIT/BS/InvBar.vue';
+import PrunButton from '@src/components/PrunButton.vue';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { store as planetContextMenu } from '@src/features/XIT/planet-context-menu';
 import { useTileState } from './tile-state';
+import fa from '@src/utils/font-awesome.module.css';
 
 type InvType = 'BASE' | 'SHIP' | 'WAREHOUSE' | 'CX';
 
@@ -41,6 +43,7 @@ const showShip = useTileState('showShip');
 const showWarehouse = useTileState('showWarehouse');
 const showCx = useTileState('showCx');
 const showBaseWar = useTileState('showBaseWar');
+const locationFilter = ref('');
 
 const basePlanetIds = computed(() => {
   const sites = sitesStore.all.value;
@@ -132,6 +135,8 @@ const filteredRows = computed(() => {
     return undefined;
   }
 
+  const query = locationFilter.value.trim().toUpperCase();
+
   return rows.filter(row => {
     if (row.type === 'BASE' && !showBase.value) {
       return false;
@@ -150,6 +155,9 @@ const filteredRows = computed(() => {
         return false;
       }
     }
+    if (query && !row.label.toUpperCase().includes(query)) {
+      return false;
+    }
     return true;
   });
 });
@@ -165,6 +173,24 @@ const filteredRows = computed(() => {
       <RadioItem v-model="showCx" horizontal>CX</RadioItem>
       <div :class="$style.separator" />
       <RadioItem v-model="showBaseWar" horizontal>BASE WAR</RadioItem>
+      <div :class="$style.spacer" />
+      <div :class="$style.searchContainer">
+        <input
+          v-model="locationFilter"
+          type="text"
+          autocomplete="off"
+          data-1p-ignore="true"
+          data-lpignore="true"
+          placeholder="Enter location"
+          :class="$style.searchInput" />
+        <PrunButton
+          v-if="locationFilter"
+          dark
+          :class="[fa.solid, $style.clearButton]"
+          @click="locationFilter = ''">
+          {{ '' }}
+        </PrunButton>
+      </div>
     </div>
     <table :class="$style.table">
       <thead>
@@ -204,6 +230,41 @@ const filteredRows = computed(() => {
   align-self: stretch;
   background-color: #2b485a;
   margin: 0 0.25rem;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  background-color: #42361d;
+  border-width: 0 0 1px;
+  border-bottom: 1px solid #8d6411;
+  color: #cccccc;
+  padding: 0 5px;
+
+  &::placeholder {
+    color: #666;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.clearButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 2px;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
 }
 
 .table {
