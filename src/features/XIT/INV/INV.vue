@@ -13,12 +13,18 @@ import RadioItem from '@src/components/forms/RadioItem.vue';
 import LoadingSpinner from '@src/components/LoadingSpinner.vue';
 import InvBar from '@src/features/XIT/BS/InvBar.vue';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
-import { fixed0 } from '@src/utils/format';
+import { store as planetContextMenu } from '@src/features/XIT/planet-context-menu';
 import { useTileState } from './tile-state';
 
 type InvType = 'BASE' | 'SHIP' | 'WAREHOUSE' | 'CX';
 
 const TYPE_ORDER: Record<InvType, number> = { BASE: 0, SHIP: 1, WAREHOUSE: 2, CX: 3 };
+const TYPE_LABELS: Record<InvType, string> = {
+  BASE: 'BS',
+  SHIP: 'SHP',
+  WAREHOUSE: 'WAR',
+  CX: 'CX',
+};
 
 interface InvRow {
   storeId: string;
@@ -26,9 +32,8 @@ interface InvRow {
   label: string;
   naturalId?: string;
   warehousePlanetId?: string;
+  contextMenuId?: string;
   onClickCmd: string;
-  weightCapacity: number;
-  volumeCapacity: number;
 }
 
 const showBase = useTileState('showBase');
@@ -76,9 +81,8 @@ const allRows = computed<InvRow[] | undefined>(() => {
         type: 'BASE',
         label: getEntityNameFromAddress(site.address) ?? naturalId,
         naturalId,
+        contextMenuId: naturalId,
         onClickCmd: `INV ${store.id.substring(0, 8)}`,
-        weightCapacity: store.weightCapacity,
-        volumeCapacity: store.volumeCapacity,
       });
     } else if (store.type === 'SHIP_STORE') {
       const ship = ships.find(s => s.idShipStore === store.id);
@@ -90,8 +94,6 @@ const allRows = computed<InvRow[] | undefined>(() => {
         type: 'SHIP',
         label: ship.name || ship.registration,
         onClickCmd: `SHPI ${ship.registration}`,
-        weightCapacity: store.weightCapacity,
-        volumeCapacity: store.volumeCapacity,
       });
     } else if (store.type === 'WAREHOUSE_STORE') {
       const warehouse = warehouses.find(w => w.storeId === store.id);
@@ -107,9 +109,8 @@ const allRows = computed<InvRow[] | undefined>(() => {
         type: isCx ? 'CX' : 'WAREHOUSE',
         label,
         warehousePlanetId: isCx ? undefined : naturalId,
+        contextMenuId: isCx ? undefined : (naturalId ?? undefined),
         onClickCmd: `INV ${store.id.substring(0, 8)}`,
-        weightCapacity: store.weightCapacity,
-        volumeCapacity: store.volumeCapacity,
       });
     }
   }
@@ -152,10 +153,6 @@ const filteredRows = computed(() => {
     return true;
   });
 });
-
-function formatCapacity(row: InvRow) {
-  return `${fixed0(row.weightCapacity)}t / ${fixed0(row.volumeCapacity)}m³`;
-}
 </script>
 
 <template>
@@ -175,22 +172,26 @@ function formatCapacity(row: InvRow) {
           <th :class="$style.nameCol">Name</th>
           <th :class="$style.typeCol">Type</th>
           <th :class="$style.barCol">Inventory</th>
-          <th :class="$style.sizeCol">Capacity</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="row in filteredRows" :key="row.storeId" :class="$style.row">
-          <td :class="$style.nameCell">
-            <span :class="C.Link.link" @click="showBuffer(row.onClickCmd)">{{ row.label }}</span>
+          <td
+            :class="$style.nameCell"
+            @contextmenu.prevent="
+              row.contextMenuId && planetContextMenu.showMenu($event, row.contextMenuId)
+            ">
+            <span :class="$style.nameText" @click="showBuffer(row.onClickCmd)">{{
+              row.label
+            }}</span>
           </td>
-          <td :class="$style.typeCell">{{ row.type }}</td>
+          <td :class="$style.typeCell">{{ TYPE_LABELS[row.type] }}</td>
           <td :class="$style.barCell">
             <InvBar
               :store-id="row.storeId"
               :natural-id="row.naturalId"
               :on-click-cmd="row.onClickCmd" />
           </td>
-          <td :class="$style.sizeCell">{{ formatCapacity(row) }}</td>
         </tr>
       </tbody>
     </table>
@@ -211,7 +212,7 @@ function formatCapacity(row: InvRow) {
 }
 
 .nameCol {
-  width: auto;
+  /* max-width on th does not constrain table layout; nameCell handles the cap */
 }
 
 .typeCol {
@@ -224,20 +225,22 @@ function formatCapacity(row: InvRow) {
   min-width: 80px;
 }
 
-.sizeCol {
-  width: 0;
-  white-space: nowrap;
-}
-
 .row {
   border-bottom: 1px solid #2b485a;
 }
 
 .nameCell {
-  padding: 4px 6px;
-  max-width: 20ch;
-  overflow: hidden;
+  max-width: 30ch;
   white-space: nowrap;
+}
+
+.nameText {
+  display: block;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -247,17 +250,11 @@ function formatCapacity(row: InvRow) {
   opacity: 0.7;
   text-align: center;
   white-space: nowrap;
+  width: 0;
 }
 
 .barCell {
   padding: 2px;
   padding-bottom: 0;
-}
-
-.sizeCell {
-  padding: 4px 6px;
-  white-space: nowrap;
-  font-size: 11px;
-  text-align: right;
 }
 </style>
