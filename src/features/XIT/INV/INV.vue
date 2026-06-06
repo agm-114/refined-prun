@@ -39,7 +39,9 @@ const showBaseWar = useTileState('showBaseWar');
 
 const basePlanetIds = computed(() => {
   const sites = sitesStore.all.value;
-  if (!sites) return new Set<string>();
+  if (!sites) {
+    return new Set<string>();
+  }
   return new Set(
     sites
       .map(site => getEntityNaturalIdFromAddress(site.address))
@@ -53,16 +55,22 @@ const allRows = computed<InvRow[] | undefined>(() => {
   const ships = shipsStore.all.value;
   const warehouses = warehousesStore.all.value;
 
-  if (!stores || !sites || !ships || !warehouses) return undefined;
+  if (!stores || !sites || !ships || !warehouses) {
+    return undefined;
+  }
 
   const rows: InvRow[] = [];
 
   for (const store of stores) {
     if (store.type === 'STORE') {
       const site = sitesStore.getById(store.addressableId);
-      if (!site) continue;
+      if (!site) {
+        continue;
+      }
       const naturalId = getEntityNaturalIdFromAddress(site.address);
-      if (!naturalId) continue;
+      if (!naturalId) {
+        continue;
+      }
       rows.push({
         storeId: store.id,
         type: 'BASE',
@@ -74,7 +82,9 @@ const allRows = computed<InvRow[] | undefined>(() => {
       });
     } else if (store.type === 'SHIP_STORE') {
       const ship = ships.find(s => s.idShipStore === store.id);
-      if (!ship) continue;
+      if (!ship) {
+        continue;
+      }
       rows.push({
         storeId: store.id,
         type: 'SHIP',
@@ -85,7 +95,9 @@ const allRows = computed<InvRow[] | undefined>(() => {
       });
     } else if (store.type === 'WAREHOUSE_STORE') {
       const warehouse = warehouses.find(w => w.storeId === store.id);
-      if (!warehouse) continue;
+      if (!warehouse) {
+        continue;
+      }
       const locationLine = getLocationLineFromAddress(warehouse.address);
       const isCx = isStationLine(locationLine);
       const naturalId = getEntityNaturalIdFromAddress(warehouse.address);
@@ -104,7 +116,9 @@ const allRows = computed<InvRow[] | undefined>(() => {
 
   rows.sort((a, b) => {
     const typeOrder = TYPE_ORDER[a.type] - TYPE_ORDER[b.type];
-    if (typeOrder !== 0) return typeOrder;
+    if (typeOrder !== 0) {
+      return typeOrder;
+    }
     return a.label.localeCompare(b.label);
   });
 
@@ -113,15 +127,27 @@ const allRows = computed<InvRow[] | undefined>(() => {
 
 const filteredRows = computed(() => {
   const rows = allRows.value;
-  if (!rows) return undefined;
+  if (!rows) {
+    return undefined;
+  }
 
   return rows.filter(row => {
-    if (row.type === 'BASE' && !showBase.value) return false;
-    if (row.type === 'SHIP' && !showShip.value) return false;
-    if (row.type === 'WAREHOUSE' && !showWarehouse.value) return false;
-    if (row.type === 'CX' && !showCx.value) return false;
+    if (row.type === 'BASE' && !showBase.value) {
+      return false;
+    }
+    if (row.type === 'SHIP' && !showShip.value) {
+      return false;
+    }
+    if (row.type === 'WAREHOUSE' && !showWarehouse.value) {
+      return false;
+    }
+    if (row.type === 'CX' && !showCx.value) {
+      return false;
+    }
     if (!showBaseWar.value && row.type === 'WAREHOUSE' && row.warehousePlanetId) {
-      if (basePlanetIds.value.has(row.warehousePlanetId)) return false;
+      if (basePlanetIds.value.has(row.warehousePlanetId)) {
+        return false;
+      }
     }
     return true;
   });
