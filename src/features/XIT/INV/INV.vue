@@ -221,7 +221,6 @@ const filteredRows = computed(() => {
 }
 
 .barCol {
-  width: 40%;
   min-width: 80px;
 }
 
