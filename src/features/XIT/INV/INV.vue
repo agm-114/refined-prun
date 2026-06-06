@@ -159,9 +159,9 @@ const filteredRows = computed(() => {
   <LoadingSpinner v-if="!filteredRows" />
   <template v-else>
     <div :class="C.ComExOrdersPanel.filter">
-      <RadioItem v-model="showBase" horizontal>BASE</RadioItem>
-      <RadioItem v-model="showShip" horizontal>SHIP</RadioItem>
-      <RadioItem v-model="showWarehouse" horizontal>WAREHOUSE</RadioItem>
+      <RadioItem v-model="showBase" horizontal>BS</RadioItem>
+      <RadioItem v-model="showShip" horizontal>SHP</RadioItem>
+      <RadioItem v-model="showWarehouse" horizontal>WAR</RadioItem>
       <RadioItem v-model="showCx" horizontal>CX</RadioItem>
       <div :class="$style.separator" />
       <RadioItem v-model="showBaseWar" horizontal>BASE WAR</RadioItem>
@@ -212,7 +212,7 @@ const filteredRows = computed(() => {
 }
 
 .nameCol {
-  /* max-width on th does not constrain table layout; nameCell handles the cap */
+  padding: 4px 6px;
 }
 
 .typeCol {
@@ -230,12 +230,13 @@ const filteredRows = computed(() => {
 }
 
 .nameCell {
-  max-width: 30ch;
-  white-space: nowrap;
+  width: 1px;
+  padding: 4px 6px;
 }
 
 .nameText {
   display: block;
+  max-width: 200px;
   font-weight: bold;
   font-size: 12px;
   cursor: pointer;
