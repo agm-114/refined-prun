@@ -20,7 +20,7 @@ import fa from '@src/utils/font-awesome.module.css';
 
 type InvType = 'BASE' | 'SHIP' | 'WAREHOUSE' | 'CX';
 
-const TYPE_ORDER: Record<InvType, number> = { BASE: 0, SHIP: 1, WAREHOUSE: 2, CX: 3 };
+const TYPE_ORDER: Record<InvType, number> = { CX: 0, BASE: 1, SHIP: 2, WAREHOUSE: 3 };
 const TYPE_LABELS: Record<InvType, string> = {
   BASE: 'BS',
   SHIP: 'SHP',
