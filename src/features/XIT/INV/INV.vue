@@ -167,10 +167,10 @@ const filteredRows = computed(() => {
   <LoadingSpinner v-if="!filteredRows" />
   <template v-else>
     <div :class="C.ComExOrdersPanel.filter">
+      <RadioItem v-model="showCx" horizontal>CX</RadioItem>
       <RadioItem v-model="showBase" horizontal>BS</RadioItem>
       <RadioItem v-model="showShip" horizontal>SHP</RadioItem>
       <RadioItem v-model="showWarehouse" horizontal>WAR</RadioItem>
-      <RadioItem v-model="showCx" horizontal>CX</RadioItem>
       <div :class="$style.separator" />
       <RadioItem v-model="showBaseWar" horizontal>BASE WAR</RadioItem>
       <div :class="$style.spacer" />
