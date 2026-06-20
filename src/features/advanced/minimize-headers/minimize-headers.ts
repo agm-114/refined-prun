@@ -1,5 +1,5 @@
 import MinimizeRow from './MinimizeRow.vue';
-import { streamHtmlCollection } from '@src/utils/stream-html-collection';
+import { observeHtmlCollection } from '@src/utils/observe-html-collection';
 import { computedTileState } from '@src/store/user-data-tiles';
 import { getTileState } from './tile-state';
 import { PrunI18N } from '@src/infrastructure/prun-ui/i18n';
@@ -8,7 +8,7 @@ import { contractsStore, isFactionContract } from '@src/infrastructure/prun-api/
 function onTileReady(tile: PrunTile) {
   const isMinimized = computedTileState(getTileState(tile), 'minimizeHeader', true);
 
-  subscribe(streamHtmlCollection(tile.anchor, tile.anchor.children), async child => {
+  subscribe(observeHtmlCollection(tile.anchor, tile.anchor.children), async child => {
     const header = await $(child, C.FormComponent.containerPassive);
     setHeaders(tile, isMinimized.value);
 
@@ -25,7 +25,7 @@ function onTileReady(tile: PrunTile) {
   });
 
   subscribe(
-    streamHtmlCollection(
+    observeHtmlCollection(
       tile.anchor,
       tile.anchor.getElementsByClassName(C.FormComponent.containerPassive),
     ),
