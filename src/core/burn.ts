@@ -66,7 +66,7 @@ const burnBySiteId = computed(() => {
   return bySiteId;
 });
 
-function getInboundShipStores(planetNaturalId: string | undefined) {
+export function getInboundShipStores(planetNaturalId: string | undefined) {
   if (!inboundShipInventoryEnabled.value) {
     return [];
   }
