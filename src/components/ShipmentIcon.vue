@@ -2,10 +2,7 @@
 import ColoredIcon, { ColoredIconSize } from '@src/components/ColoredIcon.vue';
 import { contractsStore } from '@src/infrastructure/prun-api/data/contracts';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
-import {
-  getFullAddressName,
-  getAddressName,
-} from '@src/infrastructure/prun-api/data/addresses';
+import { getFullAddressName, getAddressName } from '@src/infrastructure/prun-api/data/addresses';
 
 const { shipmentId, size = 'large' } = defineProps<{
   shipmentId?: string;
