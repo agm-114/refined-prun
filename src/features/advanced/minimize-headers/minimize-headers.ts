@@ -3,6 +3,7 @@ import { streamHtmlCollection } from '@src/utils/stream-html-collection';
 import { computedTileState } from '@src/store/user-data-tiles';
 import { getTileState } from './tile-state';
 import { PrunI18N } from '@src/infrastructure/prun-ui/i18n';
+import { contractsStore, isFactionContract } from '@src/infrastructure/prun-api/data/contracts';
 
 function onTileReady(tile: PrunTile) {
   const isMinimized = computedTileState(getTileState(tile), 'minimizeHeader', true);
@@ -43,6 +44,14 @@ function setHeaders(tile: PrunTile, isMinimized: boolean) {
     if (matchesLocalization(label, 'Contract.termination', 'Termination request')) {
       const value = _$(header, C.FormComponent.input);
       if (value?.textContent !== '--') {
+        continue;
+      }
+    }
+    if (matchesLocalization(label, 'Contract.preamble', 'Preamble')) {
+      const contract = contractsStore.getByLocalId(tile.parameter);
+      const value = _$(header, C.FormComponent.input);
+      if (value?.textContent !== '--' && contract && !isFactionContract(contract)) {
+        // Preamble for user-made contracts.
         continue;
       }
     }
