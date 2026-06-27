@@ -1,6 +1,10 @@
 <script setup lang="ts">
+import { PrunI18N } from '@src/infrastructure/prun-ui/i18n';
+
 const { hasMore } = defineProps<{ hasMore: boolean }>();
 const emit = defineEmits<{ (e: 'loadMore'): void }>();
+
+const loadMoreLabel = computed(() => PrunI18N['EndlessScrollControl.label.loadmore']?.[0]?.value);
 
 const sentinel = useTemplateRef<HTMLButtonElement>('sentinel');
 let observer: IntersectionObserver | undefined;
@@ -43,6 +47,6 @@ onBeforeUnmount(() => observer?.disconnect());
     ref="sentinel"
     :class="[C.EndlessScrollControl.loadMore, { [C.EndlessScrollControl.hidden]: !hasMore }]"
     @click="loadMore">
-    {{ L.EndlessScrollControl.label.loadmore() }}
+    {{ loadMoreLabel }}
   </button>
 </template>
