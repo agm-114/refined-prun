@@ -17,7 +17,7 @@ import { dispatchClientPrunMessage } from '@src/infrastructure/prun-api/prun-api
 import { changeInputValue } from '@src/util';
 import { sleep } from '@src/utils/sleep';
 import { isEmpty } from 'ts-extras';
-import onNodeDisconnected from '@src/utils/on-node-disconnected';
+import { onNodeDisconnected } from '@src/utils/on-node-disconnected';
 
 const tile = useTile();
 const parameters = useXitParameters();
