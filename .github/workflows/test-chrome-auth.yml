@@ -1,0 +1,48 @@
+name: Test Chrome Web Store Auth
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-auth:
+    name: Verify credentials
+    runs-on: ubuntu-latest
+    steps:
+      - name: Exchange refresh token for access token
+        id: token
+        run: |
+          RESPONSE=$(curl -s -X POST https://oauth2.googleapis.com/token \
+            -d "client_id=${{ secrets.CLIENT_ID }}" \
+            -d "client_secret=${{ secrets.CLIENT_SECRET }}" \
+            -d "refresh_token=${{ secrets.REFRESH_TOKEN }}" \
+            -d "grant_type=refresh_token")
+          echo "$RESPONSE" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          if 'access_token' in data:
+            print('Token exchange: SUCCESS')
+            print('token=' + data['access_token'], file=open('/tmp/token.txt', 'w'))
+          else:
+            print('Token exchange: FAILED')
+            print('Error:', data.get('error'), data.get('error_description', ''))
+            sys.exit(1)
+          "
+
+      - name: Fetch extension info (read-only)
+        run: |
+          ACCESS_TOKEN=$(cat /tmp/token.txt | cut -d= -f2-)
+          RESPONSE=$(curl -s \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            "https://www.googleapis.com/chromewebstore/v1.1/items/${{ secrets.EXTENSION_ID }}?projection=DRAFT")
+          echo "$RESPONSE" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          if 'id' in data:
+            print('Extension access: SUCCESS')
+            print('Extension name:', data.get('name', 'n/a'))
+            print('Kind:', data.get('kind', 'n/a'))
+          else:
+            print('Extension access: FAILED')
+            print('Error:', json.dumps(data, indent=2))
+            sys.exit(1)
+          "
