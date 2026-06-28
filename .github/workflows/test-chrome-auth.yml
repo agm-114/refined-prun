@@ -8,41 +8,41 @@ jobs:
     name: Verify credentials
     runs-on: ubuntu-latest
     steps:
-      - name: Exchange refresh token for access token
-        id: token
+      - name: Verify service account and extension access
         run: |
-          RESPONSE=$(curl -s -X POST https://oauth2.googleapis.com/token \
-            -d "client_id=${{ secrets.CLIENT_ID }}" \
-            -d "client_secret=${{ secrets.CLIENT_SECRET }}" \
-            -d "refresh_token=${{ secrets.REFRESH_TOKEN }}" \
-            -d "grant_type=refresh_token")
-          echo "$RESPONSE" | python3 -c "
-          import sys, json
-          data = json.load(sys.stdin)
-          if 'access_token' in data:
-            print('Token exchange: SUCCESS')
-            print('token=' + data['access_token'], file=open('/tmp/token.txt', 'w'))
-          else:
-            print('Token exchange: FAILED')
-            print('Error:', data.get('error'), data.get('error_description', ''))
-            sys.exit(1)
-          "
+          pip install google-auth --quiet
+          python3 - << 'PYEOF'
+          import google.oauth2.service_account as sa
+          import google.auth.transport.requests as gtr
+          import requests, os, json, sys
 
-      - name: Fetch extension info (read-only)
-        run: |
-          ACCESS_TOKEN=$(cat /tmp/token.txt | cut -d= -f2-)
-          RESPONSE=$(curl -s \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
-            "https://www.googleapis.com/chromewebstore/v1.1/items/${{ secrets.EXTENSION_ID }}?projection=DRAFT")
-          echo "$RESPONSE" | python3 -c "
-          import sys, json
-          data = json.load(sys.stdin)
+          print('Step 1: Authenticating service account...')
+          try:
+              creds = sa.Credentials.from_service_account_info(
+                  json.loads(os.environ['SERVICE_ACCOUNT_JSON']),
+                  scopes=['https://www.googleapis.com/auth/chromewebstore']
+              )
+              creds.refresh(gtr.Request())
+              print('Token exchange: SUCCESS')
+          except Exception as e:
+              print(f'Token exchange: FAILED — {e}', file=sys.stderr)
+              sys.exit(1)
+
+          print('Step 2: Fetching extension info (read-only)...')
+          ext_id = os.environ['EXTENSION_ID']
+          r = requests.get(
+              f'https://www.googleapis.com/chromewebstore/v1.1/items/{ext_id}?projection=DRAFT',
+              headers={'Authorization': f'Bearer {creds.token}', 'x-goog-api-version': '2'}
+          )
+          data = r.json()
           if 'id' in data:
-            print('Extension access: SUCCESS')
-            print('Extension name:', data.get('name', 'n/a'))
-            print('Kind:', data.get('kind', 'n/a'))
+              print('Extension access: SUCCESS')
+              print(f'Extension name: {data.get("name", "n/a")}')
           else:
-            print('Extension access: FAILED')
-            print('Error:', json.dumps(data, indent=2))
-            sys.exit(1)
-          "
+              print('Extension access: FAILED', file=sys.stderr)
+              print(json.dumps(data, indent=2), file=sys.stderr)
+              sys.exit(1)
+          PYEOF
+        env:
+          SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
