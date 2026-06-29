@@ -17,6 +17,16 @@ import { getPlanetBurn } from '@src/core/burn';
 import { countDays } from '@src/features/XIT/BURN/utils';
 import { getPlanetRepairAge } from '@src/features/XIT/REP/entries';
 import { timestampEachMinute } from '@src/utils/dayjs';
+import { useXitParameters } from '@src/hooks/use-xit-parameters';
+import { findWithQuery } from '@src/utils/find-with-query';
+import { convertToPlanetNaturalId } from '@src/core/planet-natural-id';
+
+const parameters = useXitParameters();
+
+function findSite(term: string, parts: string[]) {
+  const naturalId = convertToPlanetNaturalId(term, parts);
+  return sitesStore.getByPlanetNaturalId(naturalId);
+}
 
 type SortKey = 'name' | 'burn' | 'repair';
 type SortDirection = 'asc' | 'desc';
@@ -109,11 +119,27 @@ const filteredBases = computed(() => {
   if (!all) {
     return undefined;
   }
+
+  let result = all;
+  if (parameters.length > 0 && sitesStore.all.value) {
+    const query = findWithQuery(parameters, findSite);
+    let included = query.include;
+    if (query.includeAll) {
+      included = sitesStore.all.value;
+    }
+    const includedIds = new Set(
+      included
+        .filter(x => !query.exclude.has(x))
+        .map(x => getEntityNaturalIdFromAddress(x.address)),
+    );
+    result = result.filter(x => includedIds.has(x.naturalId));
+  }
+
   const filter = planetFilter.value.trim().toUpperCase();
   if (!filter) {
-    return all;
+    return result;
   }
-  return all.filter(
+  return result.filter(
     x => x.naturalId.toUpperCase().includes(filter) || x.planetName.toUpperCase().includes(filter),
   );
 });
