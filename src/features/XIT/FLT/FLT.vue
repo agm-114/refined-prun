@@ -4,7 +4,7 @@ import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
 import { flightsStore } from '@src/infrastructure/prun-api/data/flights';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
 import { exchangesStore } from '@src/infrastructure/prun-api/data/exchanges';
-import { getDestinationName } from '@src/infrastructure/prun-api/data/addresses';
+import { getAddressName } from '@src/infrastructure/prun-api/data/addresses';
 import { getInvStore } from '@src/core/store-id';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { useTileState } from '@src/store/user-data-tiles';
@@ -121,7 +121,7 @@ const rawRows = computed(() => {
       ? Math.min(stlFuelRatio ?? 0, ftlFuelRatio ?? 0)
       : (stlFuelRatio ?? 0);
     const inFlight = ship.flightId != null;
-    const destinationCode = getDestinationName(flight?.destination)?.toUpperCase();
+    const destinationCode = getAddressName(flight?.destination)?.toUpperCase();
     const isReturningToCx = destinationCode != null && cxCodes.value.has(destinationCode);
     const shipClass = getShipClass(ship);
     const conditionBand = getConditionBand(condition);
