@@ -124,7 +124,9 @@ const filteredBases = computed(() => {
   if (parameters.length > 0 && sitesStore.all.value) {
     const query = findWithQuery(parameters, findSite);
     let included = query.include;
-    if (query.includeAll) included = sitesStore.all.value;
+    if (query.includeAll) {
+      included = sitesStore.all.value;
+    }
     const includedIds = new Set(
       included
         .filter(x => !query.exclude.has(x))
