@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
-import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
-import { flightsStore } from '@src/infrastructure/prun-api/data/flights';
 import { getMaterialCategoryCssClass } from '@src/infrastructure/prun-ui/item-tracker';
 import { materialCategoriesStore } from '@src/infrastructure/prun-api/data/material-categories';
-import { getEntityNaturalIdFromAddress } from '@src/infrastructure/prun-api/data/addresses';
 import { fixed02 } from '@src/utils/format';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
+import { getInboundShipStores } from '@src/core/burn';
 
 const props = defineProps<{
   storeId: string;
@@ -24,35 +22,7 @@ interface Segment {
   title: string;
 }
 
-const inboundStores = computed<PrunApi.Store[]>(() => {
-  if (!props.naturalId) {
-    return [];
-  }
-  const ships = shipsStore.all.value;
-  const allStores = storagesStore.all.value;
-  if (!ships || !allStores) {
-    return [];
-  }
-
-  const result: PrunApi.Store[] = [];
-  for (const ship of ships) {
-    if (!ship.flightId) {
-      continue;
-    }
-    const flight = flightsStore.getById(ship.flightId);
-    if (!flight) {
-      continue;
-    }
-    if (getEntityNaturalIdFromAddress(flight.destination) !== props.naturalId) {
-      continue;
-    }
-    const shipStore = allStores.find(x => x.id === ship.idShipStore);
-    if (shipStore) {
-      result.push(shipStore);
-    }
-  }
-  return result;
-});
+const inboundStores = computed<PrunApi.Store[]>(() => getInboundShipStores(props.naturalId));
 
 const invBar = computed(() => {
   const primary = storagesStore.getById(props.storeId);
