@@ -80,14 +80,14 @@ jobs:
           Remove-Item "$profile\SingletonLock" -Force -ErrorAction SilentlyContinue
           $dist = Join-Path $env:GITHUB_WORKSPACE "dist"
 
-          Write-Output "Edge: $edge"
-          Write-Output "Dist: $dist (exists: $(Test-Path $dist))"
-          Write-Output "Profile: $profile"
-
-          $proc = Start-Process $edge -ArgumentList "--load-extension=$dist", "--user-data-dir=$profile", "https://apex.prosperousuniverse.com" -PassThru
-          Start-Sleep -Seconds 5
-          if ($proc.HasExited) {
-            Write-Output "Edge exited immediately! Exit code: $($proc.ExitCode)"
-          } else {
-            Write-Output "Edge running OK (PID $($proc.Id))"
-          }
+          # Launch via Scheduled Task so Edge runs in the interactive desktop session,
+          # not the runner's hidden window station.
+          $taskName = "rprun-launch-edge"
+          $args = "--load-extension=`"$dist`" --user-data-dir=`"$profile`" https://apex.prosperousuniverse.com"
+          $action = New-ScheduledTaskAction -Execute $edge -Argument $args
+          $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(3)
+          $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive -RunLevel Limited
+          $settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Minutes 2)
+          Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
+          Start-ScheduledTask -TaskName $taskName
+          Write-Output "Scheduled Edge launch in interactive session"
