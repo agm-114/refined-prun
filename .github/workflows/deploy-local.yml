@@ -86,6 +86,7 @@ jobs:
           $args = "--load-extension=`"$dist`" --user-data-dir=`"$profile`" https://apex.prosperousuniverse.com"
           $action = New-ScheduledTaskAction -Execute $edge -Argument $args
           $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(3)
+          $trigger.EndBoundary = (Get-Date).AddMinutes(5).ToString('s')
           $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive -RunLevel Limited
           $settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Minutes 2)
           Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
