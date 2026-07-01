@@ -29,7 +29,7 @@ function addAllButton(anchor: Element, sourceInput: HTMLInputElement, selector: 
     <PrunButton dark inline onClick={() => fillAll(anchor, sourceInput, selector)}>
       all
     </PrunButton>
-  )).after(sourceInput);
+  )).before(sourceInput);
 }
 
 function fillAll(anchor: Element, sourceInput: HTMLInputElement, selector: string) {
