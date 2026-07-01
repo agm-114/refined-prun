@@ -25,6 +25,10 @@ Core principle: Everything is a **command** (all-caps 2–6 letter codes). Comma
 - Bottom-left corner: Opens empty floating buffer (Ctrl+Space).
 - Fill with content via command entry or drag/drop.
 
+### Opening a Buffer (Two Paths)
+1. **Shortcut link**: if a left-sidebar shortcut or in-tile link for the target command already exists, click it directly.
+2. **Command entry**: otherwise, click **NEW BFR** (bottom-left) to open an empty floating buffer, type the command code (e.g. `CONTD`) into its input box, and hit Enter to load that buffer.
+
 ## UI Layout
 
 ### Left Sidebar
