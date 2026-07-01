@@ -1,5 +1,6 @@
 import { changeInputValue, focusElement } from '@src/util';
 import PrunButton from '@src/components/PrunButton.vue';
+import $style from './contd-fill-all-button.module.css';
 
 function onTileReady(tile: PrunTile) {
   let firstGroup: Element | undefined;
@@ -26,7 +27,11 @@ function onTileReady(tile: PrunTile) {
 
 function addAllButton(anchor: Element, sourceInput: HTMLInputElement, selector: string) {
   createFragmentApp(() => (
-    <PrunButton dark inline onClick={() => fillAll(anchor, sourceInput, selector)}>
+    <PrunButton
+      dark
+      inline
+      class={$style.allButton}
+      onClick={() => fillAll(anchor, sourceInput, selector)}>
       all
     </PrunButton>
   )).before(sourceInput);
