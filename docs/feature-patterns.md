@@ -152,6 +152,9 @@ The `pkg` is a plain hardcoded object, not persisted user data — `ExecuteActio
 | `config` | `@src/infrastructure/shell/config` |
 | `createFragmentApp` | `@src/utils/vue-fragment-app` |
 | `applyCssRule` | `@src/infrastructure/prun-ui/refined-prun-css` |
+| `sumBy` | `@src/utils/sum-by` |
+
+ESLint bans `.reduce()` for summation (`no-restricted-syntax`) — use `sumBy(array, x => x.value)` instead.
 
 ---
 
@@ -271,15 +274,9 @@ Prefer async (`$`/`$$`) over sync (`_$`/`_$$`) when possible — they're type-sa
 
 ---
 
-## Key Concepts
+## Observing Tiles
 
 **Tiles** are the game's UI panels — each opened by a command (e.g., `INV`, `PROD`, `FLT`). See `docs/game/ui-concepts.md` for full APEX interface reference.
-
-**`C` object** maps all PrUn CSS class names, parsed at runtime from the game's hashed stylesheets. Always use `C.Component.class` — never hardcode hashed class names.
-
----
-
-## Observing Tiles
 
 ```ts
 function onTileReady(tile: PrunTile) {
@@ -394,6 +391,13 @@ sitesStore.all.value      // undefined until fetched, then array
 sitesStore.fetched.value  // boolean
 ```
 
+### Store key shapes (verified the hard way)
+
+Map getters are keyed by API values, which don't always match what the game UI shows:
+
+- `materialsStore.getByName` is keyed by the API's camelCase internal name (`basicRations`). UI text holds the i18n **display** name ("Basic Rations") — resolve that with `getMaterialByName` from `@src/infrastructure/prun-ui/i18n` instead (reverse direction: `getMaterialName`).
+- `stationsStore.getByNaturalId` is keyed by the station's **own** natural id (`MOR`), but game address fields canonicalize stations to their **system** id (`OT-580`). To resolve a system id to its station, search `stationsStore.all.value` by `getSystemLineFromAddress(x.address)?.entity.naturalId`.
+
 ---
 
 ## Data & Reactivity Rules
@@ -430,6 +434,34 @@ const line = computed(() => productionStore.getById(tile.parameter));
 **Never use `onApiMessage` in features.** It's a low-level API for entity stores in `infrastructure/prun-api`. All API data lands in entity stores — derive what you need with `computed` or `watchEffect`.
 
 **Timestamps in ETAs must stay reactive.** Use `timestampEachMinute` (not `Date.now()`) when calculating ETAs, so it re-renders automatically.
+
+### Persisting a Small UI Preference
+
+For a single feature-local preference (e.g. a collapsed/expanded toggle), a plain
+`localStorage`-backed `ref` is enough — see `relayUrl` in `src/infrastructure/prun-api/relay.ts`
+for the established pattern. Don't reach for the tile-state store (`useTileState`/
+`user-data-tiles.ts`) for this; that's for state scoped to a specific saved tile instance
+(used by XIT panels), not a general feature preference.
+
+**Don't use `removeItem` to represent a falsy/off state if the key's absence already means
+something else (like "never configured, use the default").** `getItem` returns `null` for
+both "key was removed" and "key was never set" — those collapse into the same value, so a
+`?? defaultValue` fallback silently overrides an explicit off state on the next load. Store
+an explicit value (e.g. `''`) for the off state instead, so presence vs. absence of the key
+stays meaningful:
+
+```ts
+// Bad: hiding removes the key, so the next `getItem` returns null and falls
+// through to the "open by default" default — the hidden state doesn't stick.
+watch(isOpen, value => {
+  if (value) localStorage.setItem(key, value);
+  else localStorage.removeItem(key);
+});
+
+// Good: always set — absence of the key only ever means "never configured".
+const state = ref(localStorage.getItem(key) ?? 'default');
+watch(state, value => localStorage.setItem(key, value));
+```
 
 ---
 
@@ -500,6 +532,10 @@ See also `src/features/XIT/ACT/runner/tile-allocator.ts` for the full horizontal
 > **Note:** `openCompanionBuffer` + `setChildCommand` (horizontal variant of the above) is duplicated across `inv-analysis-button.tsx`, `shpi-base-inv-button.tsx`, and `shpi-warehouse-button.tsx`. Consider extracting to a shared utility in `buffers.ts` if a fourth caller appears.
 
 ---
+
+## Left Sidebar Replacement
+
+The `custom-left-sidebar` feature hides the base-game sidebar buttons (`#TOUR_TARGET_SIDEBAR_LEFT_02`) and renders its own configurable set from `userData.settings.sidebar` (label → command pairs, drag-reorderable). Defaults remap several labels to XIT buffers (CONT → `XIT CONTS`, FIN → `XIT FIN`, MAP → `MU`) and append extension-only entries (ACT, BURN, REP, SET, HELP → `XIT *`). Consequence for testing: sidebar clicks in the harness hit extension buttons, not base-game ones — the base mapping is documented in `docs/game/sidebar-screens.md`.
 
 ## Context Controls
 
@@ -624,6 +660,22 @@ import $style from './my-feature.module.css';
 ### Reuse
 
 Use `css.hidden` from `@src/utils/css-utils.module.css` instead of creating your own hidden class.
+
+### Matching Native Input Styling
+
+When adding a new `<input>`/`<textarea>` into the game UI, don't hand-code colors to match
+the theme — apply the game's own input class from `C` directly, the same way you'd reuse
+any other `C.Component.class`. For a textarea, `C.TextareaInput.textarea` gives the exact
+dark background, monospace font, and amber focus-underline used by the game's own inputs
+(e.g. the contract draft preamble box), and stays correct automatically if the game
+re-themes:
+
+```tsx
+<textarea class={[C.TextareaInput.textarea, $style.textarea]} ... />
+```
+
+Layer your own module class alongside it for structural overrides only (width, resize,
+min-height) — let the `C` class own the colors/border/font.
 
 ### `:has` Selector
 
