@@ -2,17 +2,44 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
-      "Bash(node scripts/local-browser-test.mjs)",
-      "Bash(node scripts/pw-close.mjs)",
-      "Bash(node scripts/pw-screenshot.mjs *)",
-      "Bash(node scripts/pw-act.mjs click *)",
-      "Bash(node scripts/pw-act.mjs click-force *)",
-      "Bash(node scripts/pw-act.mjs click-nth *)",
-      "Bash(node scripts/pw-act.mjs type *)",
-      "Bash(node scripts/pw-act.mjs fill-nth *)",
-      "Bash(node scripts/pw-act.mjs press *)",
-      "Bash(node scripts/pw-act.mjs press-on *)",
-      "Bash(node scripts/pw-act.mjs eval *)"
+      "Bash(node scripts/*)",
+      "Bash(sleep *)",
+      "Bash(tail *)",
+      "Bash(cat *)",
+      "Bash(printf *)",
+      "Bash(echo *)",
+      "Bash(mkdir *)",
+      "Bash(ls *)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(wc *)",
+      "Bash(find *)",
+      "Bash(curl *)",
+      "Bash(pnpm *)",
+      "Bash(npx eslint *)",
+      "Bash(npx prettier *)",
+      "Bash(pnpm exec eslint *)",
+      "Bash(tasklist *)",
+      "Bash(node .local/scratch/*)",
+      "Bash(pgrep *)",
+      "Agent",
+      "SendMessage",
+      "ToolSearch",
+      "Skill"
+    ]
+  },
+  "sandbox": {
+    "autoAllowBashIfSandboxed": true,
+    "excludedCommands": [
+      "node scripts/local-browser-test.mjs",
+      "node scripts/pw-act.mjs *",
+      "node scripts/pw-close.mjs",
+      "node scripts/pw-kill.mjs",
+      "node scripts/pw-screenshot.mjs *",
+      "node .local/scratch/*",
+      "sleep *",
+      "pgrep *",
+      "curl *"
     ]
   }
 }
