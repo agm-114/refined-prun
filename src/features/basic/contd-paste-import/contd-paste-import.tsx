@@ -218,6 +218,9 @@ interface ParserConfig {
   id: string;
   label: string;
   placeholder: string;
+  // Dummy text the "Example" button drops into the box, so a user can see the
+  // exact syntax without leaving the panel to read docs.
+  example: string;
   parse: (text: string) => ParseResult;
   summarize: (result: ParseResult) => string;
 }
@@ -234,6 +237,19 @@ const parsers: ParserConfig[] = [
       '"destination": "Moria Station", "payment": 10000, "deadline": 5, ' +
       '"materials": [{"ticker": "RAT", "amount": 100}]} — BUY/SELL take "location" and ' +
       'per-material "price" instead. Every field is optional.',
+    example: JSON.stringify(
+      {
+        type: 'SHIP',
+        currency: 'NCC',
+        origin: 'Montem',
+        destination: 'Moria Station',
+        payment: 9000,
+        deadline: 5,
+        materials: [{ ticker: 'RAT', amount: 100 }],
+      },
+      null,
+      2,
+    ),
     parse: parseContractJson,
     summarize: summarizeContractJson,
   },
@@ -245,6 +261,8 @@ const parsers: ParserConfig[] = [
       'Contract fields are keyword rows: template, currency, location, origin, ' +
       'destination, payment, deadline, autoprovision — keyword in the first column, ' +
       'value in the second.',
+    example:
+      'template\tBUY\ncurrency\tNCC\nlocation\tMontem\ndeadline\t5\n100\tRAT\t45000\n50\tDW\t120000',
     parse: parseSheetsExcel,
     summarize: summarizeSheetsExcel,
   },
@@ -252,6 +270,11 @@ const parsers: ParserConfig[] = [
     id: 'prunplanner',
     label: 'Prun Planner',
     placeholder: 'Paste PRUNplanner supply cart JSON',
+    example: JSON.stringify(
+      { groups: [{ name: 'Cart', materials: { RAT: 100, DW: 50 } }] },
+      null,
+      2,
+    ),
     parse: parseSupplyCart,
     summarize: summarizeSupplyCart,
   },
@@ -285,11 +308,14 @@ function insertPasteBox(container: Element, anchor: Element) {
   const dragMaterials = ref<MaterialEntry[]>([]);
   const dragHover = ref<DraggedStack[] | undefined>();
   // Stack awaiting a typed amount after an AMT drop; its row is added only on
-  // confirm. Mirrors the game's MTRA buffer (text input prefilled to 1,
-  // explicit confirm, amount validated against the stack size at submit
-  // rather than as-you-type), inlined into the panel. Unlike MTRA the prompt
-  // is purely local, so Enter/Escape work too, and the input is auto-focused
-  // — the same nicety mtra-auto-focus-amount.ts adds to the real buffer.
+  // confirm. Mirrors the game's MTRA buffer (explicit confirm, amount
+  // validated against the stack size at submit rather than as-you-type),
+  // inlined into the panel. Unlike MTRA the prompt is purely local, so
+  // Enter/Escape work too. The input is prefilled to the full stack size and
+  // auto-focused with the text selected — the same auto-focus nicety
+  // mtra-auto-focus-amount.ts adds to the real buffer, but prefilled to the
+  // max instead of 1 so a bare Enter transfers the whole stack, with the
+  // selection making it just as fast to type over for a partial amount.
   const amountPrompt = ref<DraggedStack | undefined>();
   const promptAmount = ref('');
   // One-shot flag: the template ref below fires on every re-render, but the
@@ -372,7 +398,7 @@ function insertPasteBox(container: Element, anchor: Element) {
     }
     if (option.prompt) {
       amountPrompt.value = stacks[0];
-      promptAmount.value = '1';
+      promptAmount.value = String(stacks[0].quantity);
       promptNeedsFocus = true;
       return;
     }
@@ -498,6 +524,13 @@ function insertPasteBox(container: Element, anchor: Element) {
             value={instance.text.value}
             onInput={(e: Event) => (instance.text.value = (e.target as HTMLTextAreaElement).value)}
           />
+        )}
+        {instance?.kind === 'text' && (
+          <div class={$style.exampleRow}>
+            <PrunButton dark inline onClick={() => (instance.text.value = instance.example)}>
+              Example
+            </PrunButton>
+          </div>
         )}
         {instance?.kind === 'drag' && (
           <div

@@ -1,4 +1,9 @@
 .container {
+  /* Pulls the box up into the CONTD overlay's own reserved (and here unused)
+     close-icon spacer above it — verified live at ~44px — instead of pushing
+     the template form down by the same amount the boxes below grow taller.
+     Smaller than the spacer so it never climbs into the row above it. */
+  margin-top: -32px;
   margin-bottom: 8px;
   /* Size container for the narrow-buffer query below — it must live on an
      ancestor of .dropZone, since a container query can't size-query the very
@@ -15,13 +20,17 @@
 
 .textarea {
   width: 100%;
-  min-height: 48px;
+  min-height: 80px;
   resize: vertical;
+}
+
+.exampleRow {
+  margin-top: 4px;
 }
 
 .dropZone {
   position: relative;
-  min-height: 48px;
+  min-height: 80px;
   width: 100%;
   border: 1px dashed rgb(141, 100, 17);
   background: rgba(66, 54, 29, 0.4);
@@ -68,15 +77,16 @@
    (verified against the real inventory DropTargetView): equal flexible
    columns that wrap when they'd drop below roughly square width — the whole
    column is the drop target — each with a fixed-size square centered in it.
-   The game never scales its 45px square down; it wraps columns into extra
-   rows instead, with wrapped rows splitting the zone height evenly (which
-   align-content: stretch, the flex default, does for free). 32px squares
-   here because the zone is only 48px tall, not inventory-sized. */
+   32px squares here because the zone is smaller than inventory-sized. Unlike
+   the game's version, the zone is taller than the label + one row of squares
+   needs, so align-content: center (rather than the flex default of stretch)
+   keeps that content vertically centered instead of stretched to the edges. */
 .dropOverlay {
   position: absolute;
   inset: 0;
   display: flex;
   flex-wrap: wrap;
+  align-content: center;
 }
 
 /* Full-width row above the quick-amount squares — flex-wrap puts it on its
@@ -111,7 +121,7 @@
    squares, which need more height than the zone's resting minimum. */
 @container (max-width: 360px) {
   .dropZone {
-    min-height: 78px;
+    min-height: 100px;
   }
 }
 
