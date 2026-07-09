@@ -1,3 +1,4 @@
+import Commands from '@src/components/forms/Commands.vue';
 import PrunButton from '@src/components/PrunButton.vue';
 import {
   ContractDraftSpec,
@@ -502,15 +503,17 @@ function insertPasteBox(container: Element, anchor: Element) {
     return (
       <div class={$style.container}>
         <div class={$style.tabRow}>
-          {tabs.map(tab => (
-            <PrunButton
-              dark={activeParser.value !== tab.id}
-              primary={activeParser.value === tab.id}
-              inline
-              onClick={() => (activeParser.value = tab.id)}>
-              {tab.label}
-            </PrunButton>
-          ))}
+          <div class={$style.tabs}>
+            {tabs.map(tab => (
+              <PrunButton
+                dark={activeParser.value !== tab.id}
+                primary={activeParser.value === tab.id}
+                inline
+                onClick={() => (activeParser.value = tab.id)}>
+                {tab.label}
+              </PrunButton>
+            ))}
+          </div>
           {instance && (
             <PrunButton dark inline onClick={() => (activeParser.value = '')}>
               Hide
@@ -524,13 +527,6 @@ function insertPasteBox(container: Element, anchor: Element) {
             value={instance.text.value}
             onInput={(e: Event) => (instance.text.value = (e.target as HTMLTextAreaElement).value)}
           />
-        )}
-        {instance?.kind === 'text' && (
-          <div class={$style.exampleRow}>
-            <PrunButton dark inline onClick={() => (instance.text.value = instance.example)}>
-              Example
-            </PrunButton>
-          </div>
         )}
         {instance?.kind === 'drag' && (
           <div
@@ -625,6 +621,11 @@ function insertPasteBox(container: Element, anchor: Element) {
         )}
         {instance && (
           <div class={$style.row}>
+            {instance.kind === 'text' && (
+              <PrunButton dark inline onClick={() => (instance.text.value = instance.example)}>
+                Example
+              </PrunButton>
+            )}
             {instance.status.value && (
               <div
                 class={[
@@ -650,17 +651,27 @@ function insertPasteBox(container: Element, anchor: Element) {
             )}
             {instance.canImport.value && (
               <PrunButton dark inline onClick={onImport}>
-                Import
+                Apply
               </PrunButton>
             )}
-            <PrunButton dark inline onClick={onExport}>
-              Export
-            </PrunButton>
           </div>
         )}
       </div>
     );
   }).before(container);
+
+  // Own row below the template form's last CMD row (Cancel/Apply Template),
+  // styled like the game's own CMD rows (e.g. the "add commodity" row) via
+  // the shared Commands form component. Appended *inside* container, not
+  // after it — container has its own bottom padding, so mounting outside it
+  // would show that padding as a gap above this row instead of below it.
+  createFragmentApp(() => (
+    <Commands label="Export">
+      <PrunButton dark inline onClick={onExport}>
+        Export Template
+      </PrunButton>
+    </Commands>
+  )).appendTo(container);
 }
 
 function onTileReady(tile: PrunTile) {
@@ -676,6 +687,7 @@ function onTileReady(tile: PrunTile) {
 
 function init() {
   trackDragSource();
+  applyCssRule('CONTD', `.${C.TemplateSelection.container}`, $style.compactContainer);
   tiles.observe('CONTD', onTileReady);
 }
 

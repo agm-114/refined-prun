@@ -2,8 +2,11 @@
   /* Pulls the box up into the CONTD overlay's own reserved (and here unused)
      close-icon spacer above it — verified live at ~44px — instead of pushing
      the template form down by the same amount the boxes below grow taller.
-     Smaller than the spacer so it never climbs into the row above it. */
-  margin-top: -32px;
+     Smaller than the spacer (and less negative than before, now that
+     .compactContainer below reclaims dead space elsewhere) so it never climbs
+     into the row above it, and the paste box gets a little breathing room
+     instead of sitting flush against that row. */
+  margin-top: -22px;
   margin-bottom: 8px;
   /* Size container for the narrow-buffer query below — it must live on an
      ancestor of .dropZone, since a container query can't size-query the very
@@ -11,27 +14,48 @@
   container-type: inline-size;
 }
 
+/* Applied to the game's own TemplateSelection.container (see init()): its
+   native padding-top/padding-bottom render as two solid-color bands (its
+   background differs from the surrounding tile) — one above "Template
+   selection", one below the last CMD row — that just eat vertical space
+   without showing any content. Zeroing both tightens the whole panel. */
+.compactContainer {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .tabRow {
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: space-between;
   margin-bottom: 4px;
 }
 
-.textarea {
-  width: 100%;
-  min-height: 80px;
-  resize: vertical;
+/* Its own flex group (rather than a margin-left: auto on the Hide button)
+   because the game's own ".Button__inline + .Button__inline" sibling rule
+   (two classes) outguns a single-class override here — wrapping the tabs
+   sidesteps the specificity fight instead of fighting it. */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.exampleRow {
-  margin-top: 4px;
+/* Shared with .dropZone so the two panes occupy the same footprint — .textarea
+   intentionally doesn't take the drop zone's dashed border/background, only
+   its sizing. */
+.textarea,
+.dropZone {
+  min-height: 80px;
+  width: 100%;
+}
+
+.textarea {
+  resize: vertical;
 }
 
 .dropZone {
   position: relative;
-  min-height: 80px;
-  width: 100%;
   border: 1px dashed rgb(141, 100, 17);
   background: rgba(66, 54, 29, 0.4);
   padding: 4px;
@@ -118,8 +142,10 @@
 }
 
 /* A large stack (1000/10000 boxes) in a squeezed buffer wraps to two rows of
-   squares, which need more height than the zone's resting minimum. */
+   squares in .dropZone, needing more height than the resting minimum —
+   .textarea grows along with it so both panes keep the same footprint. */
 @container (max-width: 360px) {
+  .textarea,
   .dropZone {
     min-height: 100px;
   }
