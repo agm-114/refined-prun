@@ -29,10 +29,29 @@ For feature work (new feature, fix feature, refactor, PR review), create the fol
 - Analyze examples from docs
 - Revise the plan and present todo items to the user
 - Once the user accepts, create revised todo items
-- Execute, use skills and commands that can help solve the task
+- Execute — delegate per `## DELEGATION` below; use skills and commands that can help solve the task
 - Verify UI-visible changes in the real game via the run skill (`.claude/skills/run/SKILL.md`)
 
 For small tasks (one-line fixes, running tests, infra chores, questions): skip the plan-approval round trip. Still read the docs relevant to whatever you touch.
+
+## DELEGATION
+
+Implementation and verification are delegated, not done in the main session — one place for both:
+
+- **Coding tasks (writing/editing code):** delegate to Grok Build (`grok` CLI, xAI's Grok 4.5)
+  instead of editing files directly or spawning a Claude subagent for it:
+  ```
+  grok --no-auto-update --no-alt-screen --always-approve -p "<task description>"
+  ```
+  Give it the same context you'd give a subagent — file paths, which doc sections apply, what
+  "done" looks like. Review its diff (`git diff`) against `docs/contributing.md` and the plan
+  before calling the task done; Grok writes, Claude verifies. Keep direct edits for one-line
+  fixes, `AGENTS.md` itself, and cleaning up whatever Grok gets wrong. Auth
+  (`GROK_CODE_XAI_API_KEY` env var, or an already-completed `grok login`) is set up once per
+  machine by the user — never run `grok login` on their behalf.
+- **Browser/UI verification:** delegate to the `game-tester` agent
+  (`.claude/agents/game-tester.md`), per `.claude/skills/run/SKILL.md`. Screenshots and DOM
+  dumps stay in its context, not the main session's.
 
 ## DISTILL
 
