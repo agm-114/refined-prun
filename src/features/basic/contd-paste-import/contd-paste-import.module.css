@@ -1,0 +1,191 @@
+.container {
+  /* Pulls the box up into the CONTD overlay's own reserved (and here unused)
+     close-icon spacer above it — verified live at ~44px — instead of pushing
+     the template form down by the same amount the boxes below grow taller.
+     Smaller than the spacer (and less negative than before, now that
+     .compactContainer below reclaims dead space elsewhere) so it never climbs
+     into the row above it, and the paste box gets a little breathing room
+     instead of sitting flush against that row. */
+  margin-top: -22px;
+  margin-bottom: 8px;
+  /* Size container for the narrow-buffer query below — it must live on an
+     ancestor of .dropZone, since a container query can't size-query the very
+     element it styles. */
+  container-type: inline-size;
+}
+
+/* Applied to the game's own TemplateSelection.container (see init()): its
+   native padding-top/padding-bottom render as two solid-color bands (its
+   background differs from the surrounding tile) — one above "Template
+   selection", one below the last CMD row — that just eat vertical space
+   without showing any content. Zeroing both tightens the whole panel. */
+.compactContainer {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.tabRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+/* Its own flex group (rather than a margin-left: auto on the Hide button)
+   because the game's own ".Button__inline + .Button__inline" sibling rule
+   (two classes) outguns a single-class override here — wrapping the tabs
+   sidesteps the specificity fight instead of fighting it. */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Shared with .dropZone so the two panes occupy the same footprint — .textarea
+   intentionally doesn't take the drop zone's dashed border/background, only
+   its sizing. */
+.textarea,
+.dropZone {
+  min-height: 80px;
+  width: 100%;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.dropZone {
+  position: relative;
+  border: 1px dashed rgb(141, 100, 17);
+  background: rgba(66, 54, 29, 0.4);
+  padding: 4px;
+}
+
+.dropZoneHover {
+  border-color: rgb(247, 166, 0);
+}
+
+.dropZoneHint {
+  padding: 12px 4px;
+  text-align: center;
+  color: rgb(136, 136, 136);
+}
+
+.materialRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.materialTicker {
+  width: 40px;
+}
+
+.amountInput {
+  width: 80px;
+  background: rgb(66, 54, 29);
+  color: rgb(187, 187, 187);
+  border: none;
+  border-bottom: 1px solid rgb(141, 100, 17);
+  font-family: monospace;
+  padding: 1px 4px 2px;
+}
+
+.amountInput:focus {
+  border-bottom-color: rgb(247, 166, 0);
+  outline: none;
+}
+
+/* Mirrors the game's own transfer-overlay structure at a smaller scale
+   (verified against the real inventory DropTargetView): equal flexible
+   columns that wrap when they'd drop below roughly square width — the whole
+   column is the drop target — each with a fixed-size square centered in it.
+   32px squares here because the zone is smaller than inventory-sized. Unlike
+   the game's version, the zone is taller than the label + one row of squares
+   needs, so align-content: center (rather than the flex default of stretch)
+   keeps that content vertically centered instead of stretched to the edges. */
+.dropOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+}
+
+/* Full-width row above the quick-amount squares — flex-wrap puts it on its
+   own line since it never fits alongside a square. */
+.dropOverlayLabel {
+  flex: 1 0 100%;
+  text-align: center;
+  color: rgb(136, 136, 136);
+}
+
+.overlayCell {
+  flex: 1 1 auto;
+  min-width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlaySquare {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Visual only — the cell is the drop target, so drag events aren't
+     swallowed by the square (the game's full-height columns work the same
+     way). */
+  pointer-events: none;
+}
+
+/* A large stack (1000/10000 boxes) in a squeezed buffer wraps to two rows of
+   squares in .dropZone, needing more height than the resting minimum —
+   .textarea grows along with it so both panes keep the same footprint. */
+@container (max-width: 360px) {
+  .textarea,
+  .dropZone {
+    min-height: 100px;
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.status {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Marker class on the Export row's <Commands> wrapper — see
+   exportInputRowRule below for why. No visual effect of its own (isolation:
+   auto is the default), just needs a declaration so the class survives. */
+.exportRow {
+  isolation: auto;
+}
+
+/* The game's own FormComponent__input row has a fixed height (17px) taller
+   than our lone inline-block button (13px) — block layout puts all of that
+   slack below the content, not split around it, so the button reads
+   top-anchored instead of centered. This rule is never applied to this class
+   directly: applyCssRule (see init()) lifts its body onto
+   `.exportRow .${C.FormComponent.input}` at runtime, since FormComponent.input
+   is the game's own row shared by every other CMD row too (add commodity,
+   cancel/apply template) — .exportRow narrows it to just the one row that
+   holds the Export button. */
+.exportInputRowRule {
+  display: flex;
+  align-items: center;
+  /* The game's own CMD rows (add commodity, cancel/apply template) right-align
+     their buttons — flex alone left-aligns via the default justify-content. */
+  justify-content: flex-end;
+}
