@@ -161,3 +161,24 @@
 .status {
   flex: 1;
 }
+
+/* Marker class on the Export row's <Commands> wrapper — see
+   exportInputRowRule below for why. No visual effect of its own (isolation:
+   auto is the default), just needs a declaration so the class survives. */
+.exportRow {
+  isolation: auto;
+}
+
+/* The game's own FormComponent__input row has a fixed height (17px) taller
+   than our lone inline-block button (13px) — block layout puts all of that
+   slack below the content, not split around it, so the button reads
+   top-anchored instead of centered. This rule is never applied to this class
+   directly: applyCssRule (see init()) lifts its body onto
+   `.exportRow .${C.FormComponent.input}` at runtime, since FormComponent.input
+   is the game's own row shared by every other CMD row too (add commodity,
+   cancel/apply template) — .exportRow narrows it to just the one row that
+   holds the Export button. */
+.exportInputRowRule {
+  display: flex;
+  align-items: center;
+}

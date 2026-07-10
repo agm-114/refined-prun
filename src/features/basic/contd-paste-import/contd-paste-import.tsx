@@ -681,7 +681,7 @@ function insertPasteBox(container: Element, anchor: Element) {
   // after it — container has its own bottom padding, so mounting outside it
   // would show that padding as a gap above this row instead of below it.
   createFragmentApp(() => (
-    <Commands label="Export">
+    <Commands label="Export" class={$style.exportRow}>
       <PrunButton dark inline onClick={onExport}>
         Export Template
       </PrunButton>
@@ -703,6 +703,11 @@ function onTileReady(tile: PrunTile) {
 function init() {
   trackDragSource();
   applyCssRule('CONTD', `.${C.TemplateSelection.container}`, $style.compactContainer);
+  applyCssRule(
+    'CONTD',
+    `.${$style.exportRow} .${C.FormComponent.input}`,
+    $style.exportInputRowRule,
+  );
   tiles.observe('CONTD', onTileReady);
 }
 
