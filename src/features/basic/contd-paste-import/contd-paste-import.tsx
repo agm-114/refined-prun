@@ -292,6 +292,17 @@ function insertPasteBox(container: Element, anchor: Element) {
   const activeParser = ref(localStorage.getItem(activeParserStorageKey) ?? parsers[0].id);
   watch(activeParser, value => localStorage.setItem(activeParserStorageKey, value));
 
+  // Remembers which tab was open before Hide cleared activeParser, so Show
+  // reopens the same one instead of always resetting to the first tab.
+  const lastVisibleTabKey = 'rprun-contd-paste-import-last-tab';
+  const lastVisibleTab = ref(localStorage.getItem(lastVisibleTabKey) ?? parsers[0].id);
+  watch(activeParser, value => {
+    if (value) {
+      lastVisibleTab.value = value;
+      localStorage.setItem(lastVisibleTabKey, value);
+    }
+  });
+
   const textInstances = parsers.map(parser => {
     const text = ref('');
     const parsed = computed(() => parser.parse(text.value));
@@ -514,9 +525,13 @@ function insertPasteBox(container: Element, anchor: Element) {
               </PrunButton>
             ))}
           </div>
-          {instance && (
+          {instance ? (
             <PrunButton dark inline onClick={() => (activeParser.value = '')}>
               Hide
+            </PrunButton>
+          ) : (
+            <PrunButton dark inline onClick={() => (activeParser.value = lastVisibleTab.value)}>
+              Show
             </PrunButton>
           )}
         </div>
