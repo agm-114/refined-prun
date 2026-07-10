@@ -102,9 +102,13 @@ function summarize(result: ParseResult): string {
   if (result.error) {
     return result.error;
   }
-  const { spec, skipped } = result;
+  const { spec, skipped, groupCount } = result;
   const count = spec.materials.length;
-  const parts = [`${count} material${count === 1 ? '' : 's'}`];
+  const parts: string[] = [];
+  if (groupCount !== undefined) {
+    parts.push(`${groupCount} group${groupCount === 1 ? '' : 's'}`);
+  }
+  parts.push(`${count} material${count === 1 ? '' : 's'}`);
   const fields = describeSpecFields(spec);
   if (fields.length > 0) {
     parts.push(fields.join(', '));
@@ -147,14 +151,7 @@ export function parseSupplyCart(json: string): ParseResult {
 }
 
 export function summarizeSupplyCart(result: ParseResult): string {
-  if (result.error) {
-    return result.error;
-  }
-  if (result.groupCount === undefined) {
-    return '';
-  }
-  const count = result.spec.materials.length;
-  return `Parsed ${result.groupCount} group${result.groupCount === 1 ? '' : 's'}, ${count} material${count === 1 ? '' : 's'}.`;
+  return summarize(result);
 }
 
 // --- Sheets/Excel rows ---

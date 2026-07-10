@@ -648,7 +648,8 @@ function insertPasteBox(container: Element, anchor: Element) {
                   $style.status,
                   C.type.typeSmall,
                   instance.isInvalid.value && C.colors.textDanger,
-                ]}>
+                ]}
+                data-tooltip={instance.status.value}>
                 {instance.status.value}
               </div>
             )}
@@ -658,12 +659,15 @@ function insertPasteBox(container: Element, anchor: Element) {
                   $style.status,
                   C.type.typeSmall,
                   importIssues.value!.length > 0 && C.colors.textDanger,
-                ]}>
+                ]}
+                data-tooltip={importStatus.value}>
                 {importStatus.value}
               </div>
             )}
             {exportStatus.value && (
-              <div class={[$style.status, C.type.typeSmall]}>{exportStatus.value}</div>
+              <div class={[$style.status, C.type.typeSmall]} data-tooltip={exportStatus.value}>
+                {exportStatus.value}
+              </div>
             )}
             {instance.canImport.value && (
               <PrunButton dark inline onClick={onImport}>
