@@ -1,5 +1,6 @@
 import Commands from '@src/components/forms/Commands.vue';
 import PrunButton from '@src/components/PrunButton.vue';
+import { onNodeTreeMutation } from '@src/utils/on-node-tree-mutation';
 import {
   ContractDraftSpec,
   MaterialEntry,
@@ -687,6 +688,18 @@ function insertPasteBox(container: Element, anchor: Element) {
       </PrunButton>
     </Commands>
   )).appendTo(container);
+
+  // Importing (e.g. importMaterials clicking "Add Commodity") makes the game
+  // append its own new row via container.appendChild rather than inserting it
+  // before a tracked anchor — that lands the new row after our foreign one,
+  // shoving this row up instead of leaving it below the new row. Re-anchor it
+  // to the end on every mutation so it stays pinned to the bottom.
+  const exportRow = container.lastElementChild as HTMLElement;
+  onNodeTreeMutation(container, () => {
+    if (container.lastElementChild !== exportRow) {
+      container.appendChild(exportRow);
+    }
+  });
 }
 
 function onTileReady(tile: PrunTile) {

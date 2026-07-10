@@ -181,4 +181,7 @@
 .exportInputRowRule {
   display: flex;
   align-items: center;
+  /* The game's own CMD rows (add commodity, cancel/apply template) right-align
+     their buttons — flex alone left-aligns via the default justify-content. */
+  justify-content: flex-end;
 }
