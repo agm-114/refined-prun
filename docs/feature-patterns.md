@@ -677,6 +677,44 @@ re-themes:
 Layer your own module class alongside it for structural overrides only (width, resize,
 min-height) — let the `C` class own the colors/border/font.
 
+Two verified quirks when pairing such an input with sibling elements:
+
+- `C.TextareaInput.textarea` sets colors and the focus underline but leaves the font at
+  the browser default (13.3333px monospace). A sibling element meant to read like the
+  textarea's placeholder (e.g. an empty-state hint on an alternate pane) must set
+  `font: 13.3333px monospace` explicitly — panel text is otherwise Droid Sans.
+- A bare `<textarea>` is inline-block: it sits on the text baseline and leaves a few px
+  of descender gap below it. Give it `display: block` when its footprint must match a
+  block-level sibling pane, or the panes' total heights differ even with identical rects.
+
+### Matching the Game's Scrollbar
+
+An overflowing element added to the game UI gets the wide native browser scrollbar
+(arrow buttons included), which looks foreign in a buffer. The game's narrow gray
+scrollbar (chat, command suggestions, production lines) is plain CSS — mirror its own
+rules verbatim:
+
+```css
+.textarea {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(51, 51, 51) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(51, 51, 51);
+    border-radius: 5px;
+  }
+}
+```
+
+There is no game class to reuse for this: the game's main `ScrollView` machinery never
+restyles the scrollbar — it hides the native one by pushing it outside a clipped parent
+(`margin-right: -15px`) — so copy the values.
+
 ### `:has` Selector
 
 Use `:has` to implement conditional styling in pure CSS, avoiding unnecessary JS.

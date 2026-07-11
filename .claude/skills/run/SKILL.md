@@ -90,6 +90,12 @@ type errors surfaced). Output goes to `dist/`.
 step 3). That's the full loop for iterating on a change without a fresh launch or an
 agent: rebuild, reload-extension, look.
 
+**A stale build fails silently.** The running browser holds whatever branch was last
+built — and the user swaps active branches often, so assume it's NOT yours. A feature
+missing from the loaded build renders zero DOM and no console error, indistinguishable
+from a broken feature. Always rebuild + reload-extension before verifying, and before
+concluding a feature is broken or absent.
+
 ### 2. Launch the browser
 
 ```
