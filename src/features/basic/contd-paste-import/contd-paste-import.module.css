@@ -51,7 +51,28 @@
 }
 
 .textarea {
+  /* A bare <textarea> is inline-block, so it sits on the text baseline and
+     leaves a few px of descender gap below it that the block-level .dropZone
+     doesn't have — the panes' outer rects match, but the JSON/Sheets tabs end
+     up a few px taller overall. Block layout removes the gap. */
+  display: block;
   resize: vertical;
+  /* The browser-native scrollbar (wide, with arrow buttons) looks foreign in
+     a game buffer. These values mirror the game's own narrow gray scrollbar
+     rules verbatim (e.g. its command-suggestions container): thin standard
+     scrollbar for engines that support it, 6px #333 thumb for older WebKit. */
+  scrollbar-width: thin;
+  scrollbar-color: rgb(51, 51, 51) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(51, 51, 51);
+    border-radius: 5px;
+  }
 }
 
 .dropZone {
@@ -65,9 +86,22 @@
   border-color: rgb(247, 166, 0);
 }
 
+/* Empty-state hint, playing the same role as the text tabs' placeholder text —
+   so it copies the textarea's type instead of the panel's Droid Sans:
+   C.TextareaInput.textarea leaves the browser-default textarea font in place,
+   which computes to 13.3333px monospace. Filling the zone with a flex box
+   centers the hint vertically; the placeholder can't be centered the same way,
+   but a top-anchored line reads fine in a textarea while it looked lost in the
+   taller empty drop zone. */
 .dropZoneHint {
-  padding: 12px 4px;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
   text-align: center;
+  font: 13.3333px monospace;
   color: rgb(136, 136, 136);
 }
 
