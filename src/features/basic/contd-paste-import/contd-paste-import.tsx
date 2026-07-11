@@ -552,7 +552,7 @@ function insertPasteBox(container: Element, anchor: Element) {
             onDragleave={onZoneDragLeave}
             onDrop={onZoneDrop}>
             {dragMaterials.value.length === 0 && !dragHover.value && !amountPrompt.value && (
-              <div class={[$style.dropZoneHint, C.type.typeSmall]}>
+              <div class={$style.dropZoneHint}>
                 Drag a material stack here from another inventory
               </div>
             )}
