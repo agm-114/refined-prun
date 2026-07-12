@@ -5,7 +5,8 @@ import { getPrice } from '@src/infrastructure/fio/cx';
 import { formatCurrency } from '@src/utils/format';
 import { refPrunId } from '@src/infrastructure/prun-ui/attributes';
 import { refTextContent } from '@src/utils/reactive-dom';
-import { watchEffectWhileNodeAlive } from '@src/utils/watch';
+import { createReactiveDiv } from '@src/utils/reactive-element';
+import { keepLast } from '@src/utils/keep-last';
 
 function onTileReady(tile: PrunTile) {
   const ship = computed(() => shipsStore.getByRegistration(tile.parameter));
@@ -20,15 +21,16 @@ async function onMissionPlanReady(anchor: HTMLElement, ship: Ref<PrunApi.Ship | 
   const statsText = refTextContent(stats);
   const planId = refPrunId(table);
   const cost = computed(() => getFlightCost(ship.value, planId.value, statsText.value));
-  const line = document.createElement('div');
-  line.textContent = 'Cost: --';
+  subscribe($$(table, 'tr'), row => onRowReady(row, cost));
+}
 
-  watchEffectWhileNodeAlive(anchor, () => {
-    line.textContent = `Cost: ${formatCurrency(cost.value)}`;
-    if (stats.lastChild !== line) {
-      stats.appendChild(line);
-    }
-  });
+function onRowReady(row: HTMLElement, cost: Ref<number | undefined>) {
+  const firstColumn = refTextContent(row.children[0]);
+  const costText = computed(() =>
+    firstColumn.value?.trim() === '' ? `Cost: ${formatCurrency(cost.value)}` : undefined,
+  );
+  const div = createReactiveDiv(row, costText);
+  keepLast(row, () => row.children[5], div);
 }
 
 function getFlightCost(
