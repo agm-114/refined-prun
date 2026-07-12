@@ -9,21 +9,21 @@ import { watchEffectWhileNodeAlive } from '@src/utils/watch';
 
 function onTileReady(tile: PrunTile) {
   const ship = computed(() => shipsStore.getByRegistration(tile.parameter));
-  subscribe($$(tile.anchor, C.MissionPlan.container), async container =>
-    onMissionPlanReady(container, ship),
-  );
+  void onMissionPlanReady(tile.anchor, ship);
 }
 
-async function onMissionPlanReady(container: HTMLElement, ship: Ref<PrunApi.Ship | undefined>) {
-  const table = await $(container, C.MissionPlan.table);
-  const stats = await $(container, C.MissionPlan.stats);
+async function onMissionPlanReady(anchor: HTMLElement, ship: Ref<PrunApi.Ship | undefined>) {
+  const [table, stats] = await Promise.all([
+    $(anchor, C.MissionPlan.table),
+    $(anchor, C.MissionPlan.stats),
+  ]);
   const statsText = refTextContent(stats);
   const planId = refPrunId(table);
   const cost = computed(() => getFlightCost(ship.value, planId.value, statsText.value));
   const line = document.createElement('div');
   line.textContent = 'Cost: --';
 
-  watchEffectWhileNodeAlive(container, () => {
+  watchEffectWhileNodeAlive(anchor, () => {
     line.textContent = `Cost: ${formatCurrency(cost.value)}`;
     if (stats.lastChild !== line) {
       stats.appendChild(line);
@@ -55,12 +55,6 @@ function getFuelCost(ship: PrunApi.Ship | undefined, planId: string | null) {
     return undefined;
   }
 
-  const sfPrice = getPrice('SF');
-  const ffPrice = getPrice('FF');
-  if (sfPrice === undefined || ffPrice === undefined) {
-    return undefined;
-  }
-
   let sf = 0;
   let ff = 0;
   for (const segment of segments) {
@@ -68,7 +62,22 @@ function getFuelCost(ship: PrunApi.Ship | undefined, planId: string | null) {
     ff += segment.ftlFuelConsumption ?? 0;
   }
 
-  return sf * sfPrice + ff * ffPrice;
+  const sfCost = getFuelTypeCost('SF', sf);
+  const ffCost = getFuelTypeCost('FF', ff);
+  if (sfCost === undefined || ffCost === undefined) {
+    return undefined;
+  }
+
+  return sfCost + ffCost;
+}
+
+function getFuelTypeCost(ticker: string, amount: number) {
+  if (amount === 0) {
+    return 0;
+  }
+
+  const price = getPrice(ticker);
+  return price === undefined ? undefined : amount * price;
 }
 
 function getSegments(ship: PrunApi.Ship | undefined, planId: string | null) {
@@ -92,7 +101,7 @@ function parseFee(text: string | null) {
     return undefined;
   }
 
-  const match = /fees?\D*([\d.,]+)/i.exec(text);
+  const match = /fees?\s*(?:--|[^\dA-Za-z]*([\d.,]+))/i.exec(text);
   if (!match) {
     return undefined;
   }
