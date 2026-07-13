@@ -15,7 +15,7 @@ Optional Address parameter filters the fleet by location.
 
 ## SFC — Ship Flight Control
 
-Shows Ship (name + transponder links), Origin, Destination and the flight segment table: #, Type, Destination, Duration, Distance, Damage, Consumption. `abort` button cancels an active flight (server). Location names are links (station/planet screens).
+Shows Ship (name + transponder links), Origin, Destination and the flight segment table: #, Type, Destination, Duration, Distance, Damage, Consumption. `abort` button cancels an active flight (server). Location names are links (station/planet screens). Fee cells can contain multiple currency amounts concatenated without spacing, e.g. `12,000 AIC4,000 CIS`.
 
 ## SHP — Ship Information
 

@@ -103,12 +103,32 @@ function parseFee(text: string | null) {
     return undefined;
   }
 
+  const feesText = text.replace(/^.*fees?/i, '');
+  let fee = 0;
+  let hasFee = false;
+  for (const match of feesText.matchAll(/([\d.,]+)\s*(?:AIC|CIS|ICA|NCC)/gi)) {
+    const value = parseFeeNumber(match[1]);
+    if (value === undefined) {
+      continue;
+    }
+    fee += value;
+    hasFee = true;
+  }
+
+  if (hasFee) {
+    return fee;
+  }
+
   const match = /fees?\s*(?:--|[^\dA-Za-z]*([\d.,]+))/i.exec(text);
-  if (!match) {
+  if (!match?.[1]) {
     return undefined;
   }
 
-  const value = Number(match[1].replaceAll(',', ''));
+  return parseFeeNumber(match[1]);
+}
+
+function parseFeeNumber(text: string) {
+  const value = Number(text.replaceAll(',', ''));
   return isFinite(value) ? value : undefined;
 }
 
