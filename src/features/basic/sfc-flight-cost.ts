@@ -1,107 +1,59 @@
-import { flightPlansStore } from '@src/infrastructure/prun-api/data/flight-plans';
-import { flightsStore } from '@src/infrastructure/prun-api/data/flights';
 import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
+import { flightsStore } from '@src/infrastructure/prun-api/data/flights';
+import { flightPlansStore } from '@src/infrastructure/prun-api/data/flight-plans';
 import { getPrice } from '@src/infrastructure/fio/cx';
-import { fixed0, formatCurrency } from '@src/utils/format';
-import { getPrunId } from '@src/infrastructure/prun-ui/attributes';
-
-const costLineSelector = '[data-rp-sfc-flight-cost]';
+import { formatCurrency } from '@src/utils/format';
+import { createReactiveDiv } from '@src/utils/reactive-element';
+import { keepLast } from '@src/utils/keep-last';
+import { refPrunId } from '@src/infrastructure/prun-ui/attributes';
+import { refTextContent } from '@src/utils/reactive-dom';
 
 function onTileReady(tile: PrunTile) {
-  void onMissionPlanReady(tile);
+  const ship = computed(() => shipsStore.getByRegistration(tile.parameter));
+  subscribe($$(tile.anchor, C.MissionPlan.table), x => onTableReady(x, ship));
 }
 
-async function onMissionPlanReady(tile: PrunTile) {
-  const [table, stats] = await Promise.all([
-    $(tile.anchor, C.MissionPlan.table),
-    $(tile.anchor, C.MissionPlan.stats),
-  ]);
-  const line = getOrCreateCostLine(table);
-
-  let scheduled = false;
-  const update = () => {
-    scheduled = false;
-    if (!tile.anchor.isConnected) {
-      observer.disconnect();
-      return;
-    }
-
-    updateCostLine(tile, table, stats, line);
-  };
-  const scheduleUpdate = () => {
-    if (scheduled) {
-      return;
-    }
-    scheduled = true;
-    requestAnimationFrame(update);
-  };
-
-  const observer = new MutationObserver(scheduleUpdate);
-  observer.observe(table, { childList: true, subtree: true, characterData: true });
-  observer.observe(stats, { childList: true, subtree: true, characterData: true });
-
-  scheduleUpdate();
-  setTimeout(scheduleUpdate, 2000);
-  setTimeout(scheduleUpdate, 10000);
+function onTableReady(table: HTMLElement, ship: Ref<PrunApi.Ship | undefined>) {
+  const planId = refPrunId(table);
+  subscribe($$(table, C.MissionPlan.stats), stats => {
+    subscribe($$(stats, 'tr'), x => onSummaryRowReady(table, x, ship, planId));
+  });
 }
 
-function getOrCreateCostLine(table: HTMLElement) {
-  const existing = table.querySelector(costLineSelector);
-  if (existing instanceof HTMLElement) {
-    return existing;
-  }
-
-  const line = document.createElement('div');
-  line.dataset.rpSfcFlightCost = 'true';
-  return line;
-}
-
-function updateCostLine(tile: PrunTile, table: HTMLElement, stats: Element, line: HTMLElement) {
-  const damageCell = getSummaryDamageCell(table);
-  if (!damageCell) {
+function onSummaryRowReady(
+  table: HTMLElement,
+  row: HTMLElement,
+  ship: Ref<PrunApi.Ship | undefined>,
+  planId: Ref<string | null>,
+) {
+  const thead = _$(table, 'thead');
+  const headerRow = thead ? _$(thead, 'tr') : undefined;
+  if (!headerRow) {
     return;
   }
 
-  const ship = shipsStore.getByRegistration(tile.parameter);
-  const planId = getPrunId(table);
-  const cost = getFlightCost(ship, planId, getStatsText(stats));
-  const text = `Cost: ${formatCurrency(cost, fixed0)}`;
-  if (line.textContent !== text) {
-    line.textContent = text;
+  const headerCells = Array.from(headerRow.children);
+  const damageIndex = headerCells.findIndex(x => x.textContent?.trim() === 'Damage');
+  const feeIndex = headerCells.findIndex(x => x.textContent?.trim() === 'Fee');
+  if (damageIndex === -1) {
+    return;
   }
-  if (line.parentElement !== damageCell) {
-    damageCell.appendChild(line);
-  }
-}
 
-function getStatsText(stats: Element) {
-  const clone = stats.cloneNode(true) as Element;
-  for (const line of Array.from(clone.querySelectorAll(costLineSelector))) {
-    line.remove();
-  }
-  return clone.textContent;
-}
+  const feeText = feeIndex >= 0 ? refTextContent(row.children[feeIndex]) : ref(null);
 
-function getSummaryDamageCell(table: HTMLElement) {
-  const rows = Array.from(table.getElementsByTagName('tr'));
-  const summary = rows.find(
-    x => x.children[0]?.textContent?.trim() === '' && x.children[5] !== undefined,
+  const cost = computed(() => {
+    const fuelCost = getFuelCost(ship.value, planId.value);
+    if (fuelCost === undefined) {
+      return undefined;
+    }
+    return fuelCost + parseFee(feeText.value);
+  });
+
+  const text = computed(() =>
+    cost.value !== undefined ? `Cost: ${formatCurrency(cost.value)}` : undefined,
   );
-  const row = summary ?? rows.findLast(x => x.children[5] !== undefined);
-  return row?.children[5];
-}
-
-function getFlightCost(
-  ship: PrunApi.Ship | undefined,
-  planId: string | null,
-  statsText: string | null,
-) {
-  const fuelCost = getFuelCost(ship, planId);
-  if (fuelCost === undefined) {
-    return undefined;
-  }
-
-  return fuelCost + (parseFee(statsText) ?? 0);
+  const div = createReactiveDiv(row, text);
+  keepLast(row, () => row.children[damageIndex], div);
 }
 
 function getFuelCost(ship: PrunApi.Ship | undefined, planId: string | null) {
@@ -153,35 +105,18 @@ function getSegments(ship: PrunApi.Ship | undefined, planId: string | null) {
 
 function parseFee(text: string | null) {
   if (!text) {
-    return undefined;
+    return 0;
   }
 
   let fee = 0;
-  let hasFee = false;
-  for (const match of text.matchAll(/([\d.,]+)\s*(?:AIC|CIS|ICA|NCC)/gi)) {
-    const value = parseFeeNumber(match[1]);
-    if (value === undefined) {
+  for (const match of text.matchAll(/([\d.,]+)\s*[A-Z]{3}\b/g)) {
+    const value = Number(match[1].replaceAll(',', ''));
+    if (!isFinite(value)) {
       continue;
     }
     fee += value;
-    hasFee = true;
   }
-
-  if (hasFee) {
-    return fee;
-  }
-
-  if (/fees?\s*--/i.test(text)) {
-    return undefined;
-  }
-
-  const match = /fees?\s*[^\dA-Za-z]*([\d.,]+)/i.exec(text);
-  return match?.[1] ? parseFeeNumber(match[1]) : undefined;
-}
-
-function parseFeeNumber(text: string) {
-  const value = Number(text.replaceAll(',', ''));
-  return isFinite(value) ? value : undefined;
+  return fee;
 }
 
 function init() {
