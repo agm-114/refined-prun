@@ -359,6 +359,8 @@ const text = computed(() => someCondition ? 'value' : undefined);
 existingElement.appendChild(createReactiveSpan(owner, text));
 ```
 
+When deriving values from `textContent` on a container that also contains injected extension nodes, exclude the extension nodes from the parsed text. Otherwise reactive updates can feed the injected value back into the source value and create self-amplifying loops.
+
 ---
 
 ## Wrapping DOM Values as Refs

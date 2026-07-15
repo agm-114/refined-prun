@@ -64,7 +64,7 @@ function updateCostLine(tile: PrunTile, table: HTMLElement, stats: Element, line
 
   const ship = shipsStore.getByRegistration(tile.parameter);
   const planId = getPrunId(table);
-  const cost = getFlightCost(ship, planId, stats.textContent);
+  const cost = getFlightCost(ship, planId, getStatsText(stats));
   const text = `Cost: ${formatCurrency(cost, fixed0)}`;
   if (line.textContent !== text) {
     line.textContent = text;
@@ -72,6 +72,14 @@ function updateCostLine(tile: PrunTile, table: HTMLElement, stats: Element, line
   if (line.parentElement !== damageCell) {
     damageCell.appendChild(line);
   }
+}
+
+function getStatsText(stats: Element) {
+  const clone = stats.cloneNode(true) as Element;
+  for (const line of Array.from(clone.querySelectorAll(costLineSelector))) {
+    line.remove();
+  }
+  return clone.textContent;
 }
 
 function getSummaryDamageCell(table: HTMLElement) {
