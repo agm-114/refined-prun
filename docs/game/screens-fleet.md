@@ -9,7 +9,7 @@ Per-row command buttons:
 - `cargo` → `SHPI <transponder>`
 - `fuel` → `SHPF <transponder>`
 - `unload` — server action (transfers cargo to local store)
-- `fly` — opens flight configuration; the departure submit is a server action
+- `fly` — opens flight configuration; the departure submit is a server action. Selecting a destination renders the full mission-plan table (including the fee-bearing `Fees` column) as a client-side preview — safe for testing without launching a flight.
 
 Optional Address parameter filters the fleet by location.
 
