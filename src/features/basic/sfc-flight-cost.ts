@@ -32,9 +32,11 @@ function onSummaryRowReady(
     return;
   }
 
+  // Header labels can carry extra content (Damage has an info icon on fee-bearing flights),
+  // so match by prefix instead of full text.
   const headerCells = Array.from(headerRow.children);
-  const damageIndex = headerCells.findIndex(x => x.textContent?.trim() === 'Damage');
-  const feeIndex = headerCells.findIndex(x => x.textContent?.trim() === 'Fee');
+  const damageIndex = headerCells.findIndex(x => x.textContent?.trim().startsWith('Damage'));
+  const feeIndex = headerCells.findIndex(x => x.textContent?.trim().startsWith('Fee'));
   if (damageIndex === -1) {
     return;
   }
@@ -108,8 +110,10 @@ function parseFee(text: string | null) {
     return 0;
   }
 
+  // Amounts can be concatenated without spacing ("12,000 AIC4,000 CIS"), so a \b after
+  // the currency code would fail — use a lookahead for "not another letter" instead.
   let fee = 0;
-  for (const match of text.matchAll(/([\d.,]+)\s*[A-Z]{3}\b/g)) {
+  for (const match of text.matchAll(/([\d.,]+)\s*[A-Z]{3}(?![A-Z])/g)) {
     const value = Number(match[1].replaceAll(',', ''));
     if (!isFinite(value)) {
       continue;
