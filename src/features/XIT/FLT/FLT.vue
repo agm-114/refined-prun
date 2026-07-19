@@ -304,6 +304,8 @@ const rows = computed(() => {
       activePrimaryKey = secondaryKey;
       activePrimaryDirection = secondaryDirection;
       activeSecondaryKey = undefined;
+    } else {
+      activePrimaryKey = 'none';
     }
   } else {
     if (secondaryDirection !== 'none' && secondaryKey !== primaryKey) {
@@ -348,25 +350,20 @@ const activeFilterCount = computed(() => {
   ].filter(Boolean).length;
 });
 
-const problemFuelThresholdValue = computed(() => {
-  return problemFuelThreshold.value === 'any' ? 1 : Number(problemFuelThreshold.value) / 100;
-});
+const problemFuelThresholdValue = computed(() => fuelAlertThresholdMap[problemFuelThreshold.value]);
 
 function hasFuelProblem(row: FlightRow): boolean {
-  const threshold = problemFuelThresholdValue.value;
-  const ftlRatio = row.ftlFuelRatio ?? 1;
-  const stlRatio = row.stlFuelRatio ?? 1;
-  return ftlRatio < threshold || stlRatio < threshold;
+  return hasStlFuelProblem(row) || hasFtlFuelProblem(row);
 }
 
 function hasStlFuelProblem(row: FlightRow): boolean {
   const threshold = problemFuelThresholdValue.value;
-  return (row.stlFuelRatio ?? 1) < threshold;
+  return threshold < 1 && (row.stlFuelRatio ?? 1) < threshold;
 }
 
 function hasFtlFuelProblem(row: FlightRow): boolean {
   const threshold = problemFuelThresholdValue.value;
-  return (row.ftlFuelRatio ?? 1) < threshold;
+  return threshold < 1 && (row.ftlFuelRatio ?? 1) < threshold;
 }
 
 const hasAnyProblems = computed(() => {
