@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
 import { storagesStore } from '@src/infrastructure/prun-api/data/storage';
-import { getMaterialCategoryCssClass } from '@src/infrastructure/prun-ui/item-tracker';
+import {
+  getMaterialCategoryCssClass,
+  CATEGORY_CSS_PREFIX,
+} from '@src/infrastructure/prun-ui/item-tracker';
 import { materialCategoriesStore } from '@src/infrastructure/prun-api/data/material-categories';
 import { fixed02 } from '@src/utils/format';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onUnmounted } from 'vue';
 
 const props = defineProps<{
   shipId: string | null;
+  tall?: boolean;
 }>();
 
 const $style = useCssModule();
@@ -81,7 +85,7 @@ const cargoBar = computed<CargoBarData>(() => {
     const percentage = (value * 100) / divisor;
     segments.push({
       name: 'shipments',
-      class: 'rp-category-none',
+      class: `${CATEGORY_CSS_PREFIX}none`,
       width: `${percentage}%`,
       title: formatTitle('shipments', summary.shipments.weight, summary.shipments.volume),
     });
@@ -188,6 +192,12 @@ watch(
   { deep: true },
 );
 
+onUnmounted(() => {
+  if (animationTimeout) {
+    clearTimeout(animationTimeout);
+  }
+});
+
 const totalLoadRatio = computed(() => {
   const ship = shipsStore.getById(props.shipId);
   const inv = storagesStore.getById(ship?.idShipStore);
@@ -243,7 +253,11 @@ function onClick() {
 
 <template>
   <div
-    :class="[C.ProgressBar.progress, $style.container, { [$style.isUpdating]: isAnimating }]"
+    :class="[
+      C.ProgressBar.progress,
+      $style.container,
+      { [$style.isUpdating]: isAnimating, [$style.tall]: tall },
+    ]"
     :style="{ '--stripe-color': stripeAlertColor, '--stripe-width': stripeWidth }"
     @click="onClick">
     <div :class="[$style.bar, miniBarClass]">
@@ -252,7 +266,8 @@ function onClick() {
         :key="segment.name"
         :class="[segment.class, segment.borderClasses]"
         :style="{ width: segment.width }"
-        :title="segment.title">
+        :data-tooltip="segment.title"
+        data-tooltip-position="top">
         <div v-if="segment.load" :class="$style.full">
           {{ segment.load }}
         </div>
@@ -284,6 +299,11 @@ function onClick() {
     var(--stripe-color) var(--stripe-width)
   );
   background-size: var(--hypotenuse) var(--hypotenuse);
+}
+
+.tall {
+  min-height: 24px;
+  height: 24px;
 }
 
 .isUpdating {
