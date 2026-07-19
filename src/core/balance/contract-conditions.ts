@@ -1,7 +1,6 @@
 import { contractsStore, isFactionContract } from '@src/infrastructure/prun-api/data/contracts';
 import dayjs from 'dayjs';
 import { timestampEachMinute } from '@src/utils/dayjs';
-import { sumBy } from '@src/utils/sum-by';
 import { calcMaterialAmountPrice } from '@src/infrastructure/fio/cx';
 import { binarySearch } from '@src/utils/binary-search';
 import { map } from '@src/utils/map-values';
@@ -39,23 +38,16 @@ const sortedConditions = computed(() => {
 });
 
 function calculateDeadline(contract: PrunApi.Contract, condition: PrunApi.ContractCondition) {
-  if (condition.type === 'COMEX_PURCHASE_PICKUP') {
-    // The COMEX_PURCHASE_PICKUP condition has unique handling:
-    // Once all its dependencies are fulfilled,
-    // the player needs to pick up the materials using this condition.
-    // For determining the deadline of the COMEX_PURCHASE_PICKUP condition,
-    // we will use the latest deadline among its dependencies.
-    // This is because the materials can be picked up at any time,
-    // making the COMEX_PURCHASE_PICKUP's own deadline irrelevant.
-    return getLatestDependencyDeadline(contract, condition);
-  }
-
   if (condition.deadline) {
     return condition.deadline.timestamp;
   }
 
   if (!condition.deadlineDuration) {
     return Number.POSITIVE_INFINITY;
+  }
+
+  if (condition.status === 'VIOLATED' && contract.extensionDeadline) {
+    return contract.extensionDeadline.timestamp;
   }
 
   return getLatestDependencyDeadline(contract, condition) + condition.deadlineDuration.millis;

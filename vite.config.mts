@@ -47,15 +47,18 @@ export default defineConfig({
       ],
       imports: [
         { name: 'C', from: '@src/infrastructure/prun-ui/prun-css' },
-        { name: 'subscribe', from: '@src/utils/subscribe-async-generator' },
+        { name: 'L', from: '@src/infrastructure/prun-ui/i18n' },
+        { name: 'subscribe', from: '@src/utils/observable' },
         { name: 'default', as: 'tiles', from: '@src/infrastructure/prun-ui/tiles' },
         { name: 'default', as: 'features', from: '@src/features/feature-registry' },
         { name: 'default', as: 'xit', from: '@src/features/XIT/xit-registry' },
         { name: 'default', as: 'config', from: '@src/infrastructure/shell/config' },
         { name: 'createFragmentApp', from: '@src/utils/vue-fragment-app' },
+        { name: 'applyLocalizationPatch', from: '@src/infrastructure/prun-ui/i18n' },
         { name: 'applyCssRule', from: '@src/infrastructure/prun-ui/refined-prun-css' },
+        { name: 'sumBy', from: '@src/utils/sum-by' },
       ],
-      //dts: 'src/types/unimport.d.ts',
+      dts: 'src/types/unimport.d.ts',
       addons: {
         vueTemplate: true,
       },
@@ -127,7 +130,7 @@ function sanitizeModuleClassname(name: string, filename: string | undefined): st
   const baseFilename = lastSegment.replace(/(\.vue|\.module)?(\.\w+)$/, '');
 
   const classname = `${baseFilename}__${name}`;
-  const hash = getHash(`${classname}`);
+  const hash = getHash(classname);
 
   return `rp-${classname}___${hash}`;
 }
