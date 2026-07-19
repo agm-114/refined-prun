@@ -377,6 +377,14 @@ const hasAnyProblems = computed(() => {
   return source.some(x => x.conditionClass === C.ColoredValue.negative || hasFuelProblem(x));
 });
 
+const hasDockedFuelProblem = computed(() => {
+  const source = rows.value;
+  if (!source) {
+    return false;
+  }
+  return source.some(x => !x.inFlight && hasFuelProblem(x));
+});
+
 const gridTemplateColumns = computed(() => {
   const cols: string[] = [];
   if (showColName.value) {
@@ -1127,7 +1135,15 @@ function getCargoState(cargoRatio: number) {
         <div
           v-if="showColProblems && hasAnyProblems"
           :class="[$style.headerCell, $style.colProblems]">
-          Problems
+          <span>Problems</span>
+          <PrunButton
+            v-if="hasDockedFuelProblem"
+            dark
+            inline
+            :class="$style.refuelActButton"
+            @click.stop="onRefuelAllExchanges">
+            REFUEL
+          </PrunButton>
         </div>
       </div>
 
