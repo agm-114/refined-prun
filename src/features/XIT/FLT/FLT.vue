@@ -735,7 +735,7 @@ function getConditionClass(condition: number) {
   if (Math.round(condition) <= 79) {
     return C.ColoredValue.negative;
   }
-  if (Math.round(condition) <= 82) {
+  if (Math.round(condition) <= 81) {
     return coloredValue.warning;
   }
   return C.ColoredValue.positive;
