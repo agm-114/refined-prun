@@ -10,4 +10,5 @@ The project is a browser extension for the game. Throughout the chat and the doc
 - **Game concepts:** `docs/game/game-concepts.md`. Factions, materials, planets, bases, production, trading, shipping.
 - **Game UI:** `docs/game/ui-concepts.md`. APEX terminal interface, tiles, screens, data display conventions.
 - **Game commands:** `docs/game/commands.csv`. Columns: Command, Description, Mandatory parameters, Optional parameters.
+- **Data catalog and agent queries:** `docs/data-catalog.md`. Passive snapshots, provenance and completeness semantics, `XIT DATA`, tile exports, and the authenticated loopback query protocol.
 - **Planetary governance:** `docs/game/planetary-governance.md`. Population, happiness, governors, CoGC, POPI.
