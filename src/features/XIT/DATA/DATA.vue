@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PrunButton from '@src/components/PrunButton.vue';
+import ActionBar from '@src/components/ActionBar.vue';
 import Active from '@src/components/forms/Active.vue';
 import NumberInput from '@src/components/forms/NumberInput.vue';
 import SelectInput from '@src/components/forms/SelectInput.vue';
@@ -235,74 +236,81 @@ function buildPreview(result?: DataQueryResult): {
 <template>
   <div :class="$style.root">
     <div :class="$style.controls">
-      <SectionHeader>Dataset</SectionHeader>
-      <form>
-        <Active label="Source">
-          <SelectInput
-            v-model="selectedSourceId"
-            :class="$style.sourceSelect"
-            :options="sourceOptions" />
-        </Active>
-      </form>
+      <div :class="$style.settingsGrid">
+        <section :class="$style.settingsPanel">
+          <SectionHeader>Dataset</SectionHeader>
+          <form>
+            <Active label="Source">
+              <SelectInput
+                v-model="selectedSourceId"
+                :class="$style.sourceSelect"
+                :options="sourceOptions" />
+            </Active>
+          </form>
 
-      <div v-if="source" :class="$style.sourceInfo">
-        <div :class="$style.sourceDescription">{{ source.description }}</div>
-        <div :class="$style.badges">
-          <span :class="$style.badge">{{ provenanceLabel }}</span>
-          <span :class="[$style.badge, $style[source.completeness]]">
-            {{ completenessLabel.toUpperCase() }}
-          </span>
-        </div>
-        <div v-if="source.warning" :class="$style.warning">{{ source.warning }}</div>
-      </div>
-
-      <SectionHeader>Query</SectionHeader>
-      <form>
-        <Active label="Text search">
-          <TextInput v-model="search" />
-        </Active>
-        <Active label="Sort path">
-          <div :class="$style.inlineInputs">
-            <TextInput v-model="sortPath" />
-            <SelectInput v-model="sortDirection" :options="directionOptions" />
+          <div v-if="source" :class="$style.sourceInfo">
+            <div :class="$style.sourceDescription">{{ source.description }}</div>
+            <div :class="$style.badges">
+              <span :class="$style.badge">{{ provenanceLabel }}</span>
+              <span :class="[$style.badge, $style[source.completeness]]">
+                {{ completenessLabel.toUpperCase() }}
+              </span>
+            </div>
+            <div v-if="source.warning" :class="$style.warning">{{ source.warning }}</div>
           </div>
-        </Active>
-        <Active label="Result limit" :error="limit !== undefined && limit <= 0">
-          <NumberInput v-model="limit" />
-        </Active>
-      </form>
+        </section>
 
-      <div v-if="filters.length > 0" :class="$style.filters">
-        <div v-for="filter in filters" :key="filter.id" :class="$style.filterRow">
-          <span :class="$style.filterLabel">FILTER {{ filter.id }}</span>
-          <input
-            v-model="filter.path"
-            :class="$style.pathInput"
-            placeholder="property.path"
-            type="text" />
-          <select v-model="filter.operator" :class="$style.operatorSelect">
-            <option v-for="option in operatorOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-          <input
-            v-model="filter.value"
-            :class="$style.valueInput"
-            :placeholder="
-              filter.operator === 'exists' ? 'true/false; blank = true' : 'JSON or text'
-            "
-            type="text" />
-          <PrunButton danger inline @click="removeFilter(filter.id)">REMOVE</PrunButton>
+        <section :class="$style.settingsPanel">
+          <SectionHeader>Query</SectionHeader>
+          <form>
+            <Active label="Text search">
+              <TextInput v-model="search" />
+            </Active>
+            <Active label="Sort path">
+              <div :class="$style.inlineInputs">
+                <TextInput v-model="sortPath" />
+                <SelectInput v-model="sortDirection" :options="directionOptions" />
+              </div>
+            </Active>
+            <Active label="Result limit" :error="limit !== undefined && limit <= 0">
+              <NumberInput v-model="limit" />
+            </Active>
+          </form>
+        </section>
+      </div>
+
+      <ActionBar :class="$style.actionBar">
+        <PrunButton primary @click="addFilter">ADD FILTER</PrunButton>
+        <PrunButton neutral @click="resetQuery">RESET QUERY</PrunButton>
+        <PrunButton primary :disabled="!result" @click="exportResult">DOWNLOAD JSON</PrunButton>
+      </ActionBar>
+
+      <template v-if="filters.length > 0">
+        <SectionHeader>Filters</SectionHeader>
+        <div :class="$style.filters">
+          <div v-for="filter in filters" :key="filter.id" :class="$style.filterRow">
+            <span :class="$style.filterLabel">FILTER {{ filter.id }}</span>
+            <input
+              v-model="filter.path"
+              :class="$style.pathInput"
+              placeholder="property.path"
+              type="text" />
+            <select v-model="filter.operator" :class="$style.operatorSelect">
+              <option v-for="option in operatorOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+            <input
+              v-model="filter.value"
+              :class="$style.valueInput"
+              :placeholder="
+                filter.operator === 'exists' ? 'true/false; blank = true' : 'JSON or text'
+              "
+              type="text" />
+            <PrunButton danger @click="removeFilter(filter.id)">REMOVE</PrunButton>
+          </div>
         </div>
-      </div>
-
-      <div :class="$style.commands">
-        <PrunButton primary inline @click="addFilter">ADD FILTER</PrunButton>
-        <PrunButton neutral inline @click="resetQuery">RESET QUERY</PrunButton>
-        <PrunButton primary inline :disabled="!result" @click="exportResult">
-          DOWNLOAD JSON
-        </PrunButton>
-      </div>
+      </template>
 
       <template v-if="source?.load">
         <SectionHeader>Explicit Load</SectionHeader>
@@ -390,9 +398,8 @@ function buildPreview(result?: DataQueryResult): {
 
 <style module>
 .root {
-  display: grid;
-  grid-template-columns: minmax(360px, 42%) minmax(0, 1fr);
-  grid-template-rows: auto auto minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 7px;
   box-sizing: border-box;
   width: 100%;
@@ -403,7 +410,8 @@ function buildPreview(result?: DataQueryResult): {
 }
 
 .controls {
-  grid-row: 1 / -1;
+  flex: 0 1 auto;
+  max-height: 48%;
   min-height: 0;
   border: 1px solid rgb(51, 51, 51);
   background: rgb(31, 31, 31);
@@ -419,6 +427,19 @@ function buildPreview(result?: DataQueryResult): {
     background-color: rgb(51, 51, 51);
     border-radius: 5px;
   }
+}
+
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  padding: 6px;
+}
+
+.settingsPanel {
+  min-width: 0;
+  border: 1px solid rgb(51, 51, 51);
+  background: rgb(28, 28, 28);
 }
 
 .sourceSelect {
@@ -492,15 +513,12 @@ function buildPreview(result?: DataQueryResult): {
 }
 
 .filters {
-  padding: 5px 8px 0;
+  padding: 6px 8px 1px;
 }
 
 .filterRow {
   display: grid;
-  grid-template-columns: 62px minmax(90px, 1fr) minmax(110px, 1fr) auto;
-  grid-template-areas:
-    'label path operator remove'
-    '. value value remove';
+  grid-template-columns: 62px minmax(120px, 1.1fr) minmax(130px, 0.8fr) minmax(130px, 1fr) auto;
   align-items: center;
   gap: 6px;
   margin-bottom: 5px;
@@ -509,25 +527,8 @@ function buildPreview(result?: DataQueryResult): {
 }
 
 .filterLabel {
-  grid-area: label;
   color: rgb(153, 153, 153);
   font-size: 10px;
-}
-
-.pathInput {
-  grid-area: path;
-}
-
-.operatorSelect {
-  grid-area: operator;
-}
-
-.valueInput {
-  grid-area: value;
-}
-
-.filterRow > :last-child {
-  grid-area: remove;
 }
 
 .pathInput,
@@ -564,6 +565,10 @@ function buildPreview(result?: DataQueryResult): {
   flex-wrap: wrap;
   gap: 6px;
   padding: 6px 10px 9px;
+}
+
+.actionBar {
+  margin: 0 6px 7px;
 }
 
 .agentExplanation {
@@ -649,8 +654,7 @@ function buildPreview(result?: DataQueryResult): {
 }
 
 .resultHeader {
-  grid-column: 2;
-  grid-row: 1;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -665,8 +669,7 @@ function buildPreview(result?: DataQueryResult): {
 }
 
 .preview {
-  grid-column: 2;
-  grid-row: 3;
+  flex: 1 1 auto;
   min-height: 0;
   margin: 0;
   padding: 9px;
@@ -692,8 +695,7 @@ function buildPreview(result?: DataQueryResult): {
 }
 
 .previewNotice {
-  grid-column: 2;
-  grid-row: 2;
+  flex: 0 0 auto;
   padding: 5px 10px;
   border-left: 3px solid rgb(240, 173, 78);
   background: rgba(240, 173, 78, 0.08);
@@ -701,33 +703,40 @@ function buildPreview(result?: DataQueryResult): {
   font-size: 11px;
 }
 
-@media (max-width: 820px) {
-  .root {
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(260px, auto) auto auto minmax(300px, 1fr);
-  }
-
+@media (max-width: 760px) {
   .controls {
-    grid-row: 1;
-    max-height: 50vh;
+    max-height: 58%;
   }
 
-  .resultHeader,
-  .previewNotice,
-  .preview {
-    grid-column: 1;
+  .settingsGrid {
+    grid-template-columns: 1fr;
   }
 
-  .resultHeader {
-    grid-row: 2;
+  .filterRow {
+    grid-template-columns: 62px minmax(100px, 1fr) minmax(110px, 1fr) auto;
+    grid-template-areas:
+      'label path operator remove'
+      '. value value remove';
   }
 
-  .previewNotice {
-    grid-row: 3;
+  .filterLabel {
+    grid-area: label;
   }
 
-  .preview {
-    grid-row: 4;
+  .pathInput {
+    grid-area: path;
+  }
+
+  .operatorSelect {
+    grid-area: operator;
+  }
+
+  .valueInput {
+    grid-area: value;
+  }
+
+  .filterRow > :last-child {
+    grid-area: remove;
   }
 }
 </style>
