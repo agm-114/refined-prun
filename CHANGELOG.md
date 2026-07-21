@@ -9,6 +9,7 @@
 ### Changed
 
 - `FXPO`: The "Maximum Lot Size" field now sets a more precise price (`fxpo-maximum-lot-size`)
+- `XIT CONTC`: The conditions with no deadline are now grouped and sorted
 
 ### Fixed
 
