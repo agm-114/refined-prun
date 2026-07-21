@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- Added a notification count badge to the browser tab favicon (`favicon-notification-badge`)
+
 ### Changed
 
 - `FXPO`: The "Maximum Lot Size" field now sets a more precise price (`fxpo-maximum-lot-size`)
