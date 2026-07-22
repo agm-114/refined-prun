@@ -1,0 +1,75 @@
+env:
+  DIRECTORY: dist
+  GCS_BUCKET: oog-fork-gcs-bucket
+
+name: Release Firefox
+on:
+  workflow_dispatch: null
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: 'true'
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: Stamp version
+        run: |
+          version="$(date -u +'%Y.%-m.%-d').${{ github.run_number }}"
+          npx dot-json@1 "$DIRECTORY/manifest.json" version "$version"
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.DIRECTORY }}
+
+  firefox:
+    needs: build
+    name: Sign and publish (Firefox)
+    environment: Firefox
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: artifact
+          path: dist
+      - name: Sign with Mozilla
+        run: npx web-ext@8 sign --source-dir dist --channel=unlisted
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
+      - name: Generate updates.json
+        run: |
+          signed_xpi=$(ls web-ext-artifacts/*.xpi | head -1)
+          xpi_name=$(basename "$signed_xpi")
+          cp "$signed_xpi" web-ext-artifacts/refined-prun-latest.xpi
+          bash scripts/generate-update-manifest.sh \
+            "$signed_xpi" \
+            "https://storage.googleapis.com/$GCS_BUCKET/${xpi_name}"
+          echo "SIGNED_XPI=$signed_xpi" >> "$GITHUB_ENV"
+      - name: Authenticate to GCS
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - name: Upload XPI to GCS
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          path: ${{ env.SIGNED_XPI }}
+          destination: ${{ env.GCS_BUCKET }}
+      - name: Upload latest XPI to GCS
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          path: web-ext-artifacts/refined-prun-latest.xpi
+          destination: ${{ env.GCS_BUCKET }}
+      - name: Upload updates.json to GCS
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          path: updates.json
+          destination: ${{ env.GCS_BUCKET }}

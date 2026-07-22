@@ -1,0 +1,13 @@
+{
+  "addons": {
+    "{cea48e52-981d-47bb-b859-bfec6a59fcae}": {
+      "updates": [
+        {
+          "version": "VERSION",
+          "update_link": "XPI_URL",
+          "update_hash": "sha256:HASH"
+        }
+      ]
+    }
+  }
+}

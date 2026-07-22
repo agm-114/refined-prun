@@ -4,13 +4,19 @@ import PrunButton from '@src/components/PrunButton.vue';
 import Header from '@src/components/Header.vue';
 import { ActionRunner } from '@src/features/XIT/ACT/runner/action-runner';
 import { useTile } from '@src/hooks/use-tile';
-import { Logger, LogTag } from '@src/features/XIT/ACT/runner/logger';
+import { Logger, LogTag, LogContent } from '@src/features/XIT/ACT/runner/logger';
 import LogWindow from '@src/features/XIT/ACT/LogWindow.vue';
 import ConfigWindow from '@src/features/XIT/ACT/ConfigureWindow.vue';
 import { ActionPackageConfig } from '@src/features/XIT/ACT/shared-types';
 import { act } from '@src/features/XIT/ACT/act-registry';
 
-const { pkg } = defineProps<{ pkg: UserData.ActionPackageData }>();
+const { pkg, afterExecute } = defineProps<{
+  pkg: UserData.ActionPackageData;
+  afterExecute?: (
+    config: ActionPackageConfig,
+    log: (tag: LogTag, message: LogContent) => void,
+  ) => void;
+}>();
 
 const tile = useTile();
 let goingToSplit = ref(false);
@@ -20,7 +26,7 @@ const config = ref({
   actions: {},
 } as ActionPackageConfig);
 
-const log = ref([] as { tag: LogTag; message: string }[]);
+const log = ref([] as { tag: LogTag; message: LogContent }[]);
 const logScrolling = ref(true);
 const isPreviewing = ref(false);
 const isRunning = ref(false);
@@ -92,6 +98,7 @@ const runner = new ActionRunner({
   onEnd: () => {
     isRunning.value = false;
     status.value = undefined;
+    afterExecute?.(config.value, logMessage);
   },
   onStatusChanged: (title, keepReady) => {
     status.value = title;
@@ -143,7 +150,7 @@ function onSkipClick() {
   runner.skip();
 }
 
-function logMessage(tag: LogTag, message: string) {
+function logMessage(tag: LogTag, message: LogContent) {
   return log.value.push({ tag, message });
 }
 
@@ -156,11 +163,11 @@ function clearLog() {
   <div v-if="goingToSplit" />
   <div v-else :class="$style.root">
     <Header :class="$style.header">{{ pkg.global.name }}</Header>
-    <ConfigWindow
-      v-if="shouldShowConfigure"
-      :pkg="pkg"
-      :config="config"
-      :class="$style.mainWindow" />
+    <ConfigWindow v-if="shouldShowConfigure" :pkg="pkg" :config="config" :class="$style.mainWindow">
+      <template v-if="$slots.extra" #extra>
+        <slot name="extra" />
+      </template>
+    </ConfigWindow>
     <LogWindow v-else :messages="log" :scrolling="logScrolling" :class="$style.mainWindow" />
     <div :class="$style.status">
       <span>Status: </span>

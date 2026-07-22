@@ -38,6 +38,11 @@ async function onScreenItemReady(item: HTMLElement) {
   }
   const copy = await $(item, C.ScreenControls.copy);
   const hidden = computed(() => userData.tabs.hidden.includes(id));
+  const inFolder = computed(() => userData.tabs.folders.some(f => f.screenIds.includes(id)));
+
+  watchEffectWhileNodeAlive(item, () => {
+    item.style.display = inFolder.value ? 'none' : '';
+  });
 
   watchEffectWhileNodeAlive(name, () => {
     if (hidden.value) {
@@ -68,10 +73,12 @@ function extractScreenId(url?: string) {
   return url?.match(/screen=([\w-]+)/)?.[1] ?? undefined;
 }
 
+function onContainerReady(container: HTMLElement) {
+  createFragmentApp(TabBar).appendTo(container);
+}
+
 function init() {
-  subscribe($$(document, C.ScreenControls.container), container => {
-    createFragmentApp(TabBar).appendTo(container);
-  });
+  subscribe($$(document, C.ScreenControls.container), onContainerReady);
   subscribe($$(document, C.ScreenControls.screens), onListReady);
   applyCssRule(`.${C.Head.contextAndScreens}`, $style.contextAndScreens);
   applyCssRule(`.${C.ScreenControls.container}`, $style.screenControls);

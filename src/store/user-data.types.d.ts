@@ -7,6 +7,8 @@ declare namespace UserData {
 
   type PricingMethod = 'ASK' | 'BID' | 'AVG' | 'VWAP7D' | 'VWAP30D' | 'DEFAULT' | string;
 
+  export type Exchange = 'AI1' | 'CI1' | 'CI2' | 'IC1' | 'NC1' | 'NC2';
+
   interface StoreSortingData {
     modes: SortingMode[];
     active?: string;
@@ -48,7 +50,7 @@ declare namespace UserData {
     };
   }
 
-  type MaterialGroupType = 'Manual' | 'Resupply' | 'Repair';
+  type MaterialGroupType = 'Manual' | 'Resupply' | 'Repair' | 'Paste';
 
   interface MaterialGroupData {
     type: MaterialGroupType;
@@ -62,13 +64,14 @@ declare namespace UserData {
     consumablesOnly?: boolean;
   }
 
-  type ActionType = 'CX Buy' | 'MTRA' | 'Refuel';
+  type ActionType = 'CX Buy' | 'MTRA' | 'Refuel' | 'CONT Ship' | 'CONT Trade';
 
   interface ActionData {
     type: ActionType;
 
     name?: string;
     group?: string;
+    skippable?: boolean;
 
     allowUnfilled?: boolean;
     buyPartial?: boolean;
@@ -80,6 +83,19 @@ declare namespace UserData {
 
     origin?: string;
     dest?: string;
+
+    // CONT Ship specific
+    currency?: string;
+    contractNote?: string;
+    paymentPerTon?: number;
+    daysToFulfill?: number;
+    contOrigin?: string;
+    contDest?: string;
+    autoProvision?: boolean;
+
+    // CONT Trade specific
+    contTradeType?: 'BUYING' | 'SELLING';
+    contLocation?: string;
   }
 
   interface TaskList {
@@ -116,4 +132,33 @@ declare namespace UserData {
   }
 
   type ExchangeChartType = 'SMOOTH' | 'ALIGNED' | 'RAW';
+
+  interface LinkedBuffersPreset {
+    id: string;
+    name: string;
+    commands: LinkedBuffersCommand[];
+    lastBufferSize?: [number, number];
+    controlPosition?: [number, number];
+    childLayouts?: LinkedBuffersChildLayout[];
+  }
+
+  interface LinkedBuffersCommand {
+    id: string;
+    label: string;
+    template: string;
+  }
+
+  interface LinkedBuffersChildLayout {
+    commandId: string;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  }
+
+  interface TabFolder {
+    id: string;
+    name: string;
+    screenIds: string[];
+  }
 }

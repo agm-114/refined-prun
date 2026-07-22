@@ -17,6 +17,7 @@ interface Data {
 export const MTRA_TRANSFER = act.addActionStep<Data>({
   type: 'MTRA_TRANSFER',
   preProcessData: data => ({ ...data, ticker: data.ticker.toUpperCase() }),
+  totalMaterials: data => ({ [data.ticker]: data.amount }),
   description: data => {
     const from = storagesStore.getById(data.from);
     const to = storagesStore.getById(data.to);
@@ -67,7 +68,6 @@ export const MTRA_TRANSFER = act.addActionStep<Data>({
     }
 
     setStatus('Setting up MTRA buffer...');
-
     const materialSelectSuccess = await selectMaterialInMaterialSelector(tile.anchor, ticker);
     if (!materialSelectSuccess) {
       fail(`Ticker ${ticker} not found in the material selector`);

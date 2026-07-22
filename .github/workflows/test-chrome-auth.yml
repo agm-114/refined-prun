@@ -1,0 +1,48 @@
+name: Test Chrome Web Store Auth
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-auth:
+    name: Verify credentials
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify service account and extension access
+        run: |
+          pip install google-auth --quiet
+          python3 - << 'PYEOF'
+          import google.oauth2.service_account as sa
+          import google.auth.transport.requests as gtr
+          import requests, os, json, sys
+
+          print('Step 1: Authenticating service account...')
+          try:
+              creds = sa.Credentials.from_service_account_info(
+                  json.loads(os.environ['SERVICE_ACCOUNT_JSON']),
+                  scopes=['https://www.googleapis.com/auth/chromewebstore']
+              )
+              creds.refresh(gtr.Request())
+              print('Token exchange: SUCCESS')
+          except Exception as e:
+              print(f'Token exchange: FAILED — {e}', file=sys.stderr)
+              sys.exit(1)
+
+          print('Step 2: Fetching extension info (read-only)...')
+          ext_id = os.environ['EXTENSION_ID']
+          r = requests.get(
+              f'https://www.googleapis.com/chromewebstore/v1.1/items/{ext_id}?projection=DRAFT',
+              headers={'Authorization': f'Bearer {creds.token}', 'x-goog-api-version': '2'}
+          )
+          data = r.json()
+          if 'id' in data:
+              print('Extension access: SUCCESS')
+              print(f'Extension name: {data.get("name", "n/a")}')
+          else:
+              print('Extension access: FAILED', file=sys.stderr)
+              print(json.dumps(data, indent=2), file=sys.stderr)
+              sys.exit(1)
+          PYEOF
+        env:
+          SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          EXTENSION_ID: ${{ secrets.EXTENSION_ID }}

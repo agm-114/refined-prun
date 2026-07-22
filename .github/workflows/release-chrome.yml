@@ -1,0 +1,108 @@
+name: Release to Chrome Web Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Compute new version
+        id: version
+        run: |
+          CURRENT=$(cat VERSION)
+          IFS='.' read -r major minor patch <<< "$CURRENT"
+          case "${{ inputs.bump }}" in
+            major) NEW="$((major + 1)).0.0" ;;
+            minor) NEW="$major.$((minor + 1)).0" ;;
+            patch) NEW="$major.$minor.$((patch + 1))" ;;
+          esac
+          echo "new=$NEW" >> "$GITHUB_OUTPUT"
+          echo "$NEW" > VERSION
+
+      - name: Build extension
+        run: pnpm build
+
+      - name: Inject version into manifest
+        run: npx dot-json@1 dist/manifest.json version "${{ steps.version.outputs.new }}"
+
+      - name: Package extension
+        run: cd dist && zip -r ../extension.zip .
+
+      - name: Upload and publish to Chrome Web Store
+        run: |
+          pip install google-auth --quiet
+          python3 - << 'PYEOF'
+          import google.oauth2.service_account as sa
+          import google.auth.transport.requests as gtr
+          import requests, os, json, sys
+
+          creds = sa.Credentials.from_service_account_info(
+              json.loads(os.environ['SERVICE_ACCOUNT_JSON']),
+              scopes=['https://www.googleapis.com/auth/chromewebstore']
+          )
+          creds.refresh(gtr.Request())
+
+          ext_id = os.environ['EXTENSION_ID']
+          headers = {'Authorization': f'Bearer {creds.token}', 'x-goog-api-version': '2'}
+
+          with open('extension.zip', 'rb') as f:
+              r = requests.put(
+                  f'https://www.googleapis.com/upload/chromewebstore/v1.1/items/{ext_id}',
+                  headers={**headers, 'Content-Type': 'application/zip'},
+                  data=f
+              )
+          data = r.json()
+          print('Upload:', json.dumps(data, indent=2))
+          if data.get('uploadState') not in ('SUCCESS', 'IN_PROGRESS'):
+              print('Upload failed', file=sys.stderr)
+              sys.exit(1)
+
+          r = requests.post(
+              f'https://www.googleapis.com/chromewebstore/v1.1/items/{ext_id}/publish',
+              headers=headers
+          )
+          result = r.json()
+          print('Publish:', json.dumps(result, indent=2))
+          PYEOF
+        env:
+          SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+
+      - name: Commit and tag version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "Release v${{ steps.version.outputs.new }}"
+          git tag "v${{ steps.version.outputs.new }}"
+          git push origin HEAD:${{ github.ref_name }}
+          git push origin "v${{ steps.version.outputs.new }}"

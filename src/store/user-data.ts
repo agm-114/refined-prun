@@ -5,7 +5,7 @@ export const initialUserData = deepFreeze({
   tileState: {} as Record<string, UserData.TileState | undefined>,
   settings: {
     mode: undefined as 'BASIC' | 'FULL' | undefined,
-    disabled: [] as string[],
+    disabled: ['oog-burn-inflight-inventory', 'oog-cxpo-quick-price'] as string[],
     time: 'DEFAULT' as UserData.TimeFormat,
     defaultChartType: 'SMOOTH' as UserData.ExchangeChartType,
     currency: {
@@ -26,11 +26,14 @@ export const initialUserData = deepFreeze({
       red: 3,
       yellow: 7,
       resupply: 16,
+      planetResupply: {} as Record<string, number>,
     },
     repair: {
       threshold: 60,
       offset: 10,
+      planetOverrides: {} as Record<string, { threshold?: number; offset?: number }>,
     },
+    noBuy: [] as string[],
     sidebar: [
       ['BS', 'BS'],
       ['CONT', 'XIT CONTS'],
@@ -51,6 +54,8 @@ export const initialUserData = deepFreeze({
       ['HELP', 'XIT HELP'],
     ] as [string, string][],
     buffers: [] as [string, number, number][],
+    contextMenuExchange: 'AI1' as UserData.Exchange,
+    cxmOrder: ['AI1', 'CI1', 'CI2', 'IC1', 'NC1', 'NC2'] as UserData.Exchange[],
     audioVolume: 0.4,
   },
   sorting: {} as Record<string, UserData.StoreSortingData>,
@@ -67,8 +72,10 @@ export const initialUserData = deepFreeze({
     order: [] as string[],
     hidden: [] as string[],
     locked: [] as string[],
+    folders: [] as UserData.TabFolder[],
   },
   commandLists: [] as UserData.CommandList[],
+  linkedBuffersPresets: [] as UserData.LinkedBuffersPreset[],
 
   // Used in user-data-migrations.ts
   migrations: undefined,

@@ -1,13 +1,18 @@
 {
-  "name": "Refined PrUn",
+  "name": "OOG RPrUn Test Fork",
   "version": "0.0.0",
-  "description": "Browser extension that simplifies the Prosperous Universe interface and adds useful features",
+  "description": "OOG Fork of Refined-Prun with custom additions not yet available on the base extension",
   "manifest_version": 3,
   "minimum_chrome_version": "107",
   "browser_specific_settings": {
     "gecko": {
-      "id": "{c35c3edc-0acc-4531-b01c-35b6bede69fb}",
-      "strict_min_version": "109.0"
+      "id": "{cea48e52-981d-47bb-b859-bfec6a59fcae}",
+      "strict_min_version": "140.0",
+      "update_url": "https://storage.googleapis.com/oog-fork-gcs-bucket/updates.json",
+      "data_collection_permissions": {
+        "required": ["none"],
+        "optional": ["searchTerms", "personallyIdentifyingInfo"]
+      }
     }
   },
   "permissions": [

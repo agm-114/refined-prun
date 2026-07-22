@@ -4,6 +4,7 @@ import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import PrunButton from '@src/components/PrunButton.vue';
 import { PlanetBurn } from '@src/core/burn';
 import { countDays } from '@src/features/XIT/BURN/utils';
+import { store as planetContextMenu } from '@src/features/XIT/planet-context-menu';
 import { useTileState } from '@src/features/XIT/BURN/tile-state';
 
 const { burn } = defineProps<{
@@ -20,7 +21,11 @@ const nameColspan = computed(() => (io.value ? 6 : 4));
 
 <template>
   <tr :class="$style.row">
-    <td :colspan="nameColspan" :class="$style.cell" @click="onClick">
+    <td
+      :colspan="nameColspan"
+      :class="$style.cell"
+      @click="onClick"
+      @contextmenu.prevent="burn.naturalId && planetContextMenu.showMenu($event, burn.naturalId)">
       <span v-if="hasMinimize" :class="$style.minimize">
         {{ minimized ? '+' : '-' }}
       </span>
@@ -33,6 +38,9 @@ const nameColspan = computed(() => (io.value ? 6 : 4));
         <PrunButton dark inline @click="showBuffer(`INV ${burn.storeId.substring(0, 8)}`)">
           INV
         </PrunButton>
+        <PrunButton dark inline @click="showBuffer(`XIT BURNACT ${burn.naturalId}`)"
+          >ACT</PrunButton
+        >
       </div>
     </td>
   </tr>

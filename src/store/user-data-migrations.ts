@@ -23,9 +23,53 @@ const migrations: MigrationEntry[] = [
     },
   ],
   [
+    '14.05.2026 Add noBuy setting',
+    userData => {
+      userData.settings.noBuy = [];
+    },
+  ],
+  [
     '11.05.2026 Rename contribution-maxed',
     userData => {
       renameFeature(userData, 'contribution-maxed', 'cogcu-contribution-maxed');
+    },
+  ],
+  [
+    '10.05.2026 Add tab folders',
+    userData => {
+      userData.tabs.folders = [];
+    },
+  ],
+  [
+    '25.04.2026 Add per-planet repair overrides',
+    userData => {
+      userData.settings.repair.planetOverrides = {};
+    },
+  ],
+  [
+    '25.04.2026 Add per-planet resupply overrides',
+    userData => {
+      userData.settings.burn.planetResupply = {};
+    },
+  ],
+  [
+    '23.04.2026 Add cxmOrder setting',
+    userData => {
+      userData.settings.cxmOrder = ['AI1', 'CI1', 'CI2', 'IC1', 'NC1', 'NC2'];
+    },
+  ],
+  [
+    '21.04.2026 Disable oog-burn-inflight-inventory by default',
+    userData => {
+      if (!userData.settings.disabled.includes('oog-burn-inflight-inventory')) {
+        userData.settings.disabled.push('oog-burn-inflight-inventory');
+      }
+    },
+  ],
+  [
+    '11.03.2026 Add linkedBuffersPresets',
+    userData => {
+      userData.linkedBuffersPresets = [];
     },
   ],
   ['10.03.2026 Checkpoint'],
@@ -33,6 +77,12 @@ const migrations: MigrationEntry[] = [
     '10.03.2026 Remove funny-rations',
     userData => {
       removeFeature(userData, 'funny-rations');
+    },
+  ],
+  [
+    '09.03.2026 Add contextMenuExchange setting',
+    userData => {
+      userData.settings.contextMenuExchange = 'AI1' as UserData.Exchange;
     },
   ],
   [

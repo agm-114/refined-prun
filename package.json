@@ -1,5 +1,5 @@
 {
-  "name": "refined-prun",
+  "name": "refined-prun-test-fork",
   "version": "1",
   "private": true,
   "description": "Browser extension that simplifies the Prosperous Universe interface and adds useful features",
@@ -11,12 +11,16 @@
   "scripts": {
     "compile": "tsc --noEmit",
     "build": "pnpm run clean && pnpm run compile && vite build",
+    "build:fast": "pnpm run clean && vite build",
+    "build:firefox": "bash scripts/build-firefox.sh",
+    "sign:firefox": "web-ext sign --source-dir dist --channel=unlisted",
     "clean": "rimraf dist",
     "dev": "cross-env NODE_ENV=development vite build -w --mode development",
     "fix": "pnpm exec eslint ./ --fix --concurrency auto",
     "lint": "pnpm exec eslint --concurrency auto",
     "prepare": "husky",
-    "prettier": "prettier . --write --ignore-path .prettierignore"
+    "prettier": "prettier . --write --ignore-path .prettierignore",
+    "open": "scripts\\open-local.bat"
   },
   "type": "module",
   "dependencies": {
@@ -66,7 +70,8 @@
     "typescript": "5.9.2",
     "typescript-eslint": "^8.41.0",
     "unimport": "^5.2.0",
-    "vite": "^7.3.2"
+    "vite": "^7.3.2",
+    "web-ext": "^8.4.0"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,vue}": [

@@ -7,6 +7,7 @@ import {
 
 interface MaterialGroupInfo<TConfig> {
   type: UserData.MaterialGroupType;
+  shortDescription?: string;
   description: (data: UserData.MaterialGroupData, config?: TConfig) => string;
   editComponent: Component;
   configureComponent?: Component;
@@ -33,6 +34,7 @@ function getMaterialGroupTypes() {
 
 interface ActionInfo<TConfig> {
   type: UserData.ActionType;
+  shortDescription?: string;
   description: (data: UserData.ActionData, config?: TConfig) => string;
   editComponent: Component;
   configureComponent?: Component;
@@ -59,6 +61,7 @@ interface ActionStepInfo<T> {
   type: string;
   preProcessData?: (data: T) => T;
   description: (data: T) => string;
+  totalMaterials?: (data: T) => Record<string, number>;
   execute: (ctx: ActionStepExecuteContext<T>) => Promise<void>;
 }
 
