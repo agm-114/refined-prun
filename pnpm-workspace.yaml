@@ -1,4 +1,2 @@
 allowBuilds:
   esbuild: true
-patchedDependencies:
-  '@laynezh/vite-plugin-lib-assets@2.1.0': patches/@laynezh__vite-plugin-lib-assets@2.1.0.patch
