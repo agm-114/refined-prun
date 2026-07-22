@@ -25,6 +25,8 @@ interface ShowBufferOptions {
   closeWhen?: Ref<boolean>;
 }
 
+type CompanionBufferOrientation = 'horizontal' | 'vertical';
+
 export async function showBuffer(command: string, options?: ShowBufferOptions) {
   const parts = command.split(' ');
   correctXitArgs(parts);
@@ -156,4 +158,58 @@ export function setBufferSize(id: string, width: number, height: number) {
       clamp(height, 50, document.body.clientHeight - 50),
     ),
   );
+}
+
+export async function openCompanionBuffer(
+  tile: PrunTile,
+  command: string,
+  orientation: CompanionBufferOrientation = 'horizontal',
+) {
+  const window = tile.frame.closest(`.${C.Window.window}`);
+
+  if (tile.container.classList.contains(C.Window.body)) {
+    const parsedWidth = parseInt(tile.container.style.width, 10);
+    const parsedHeight = parseInt(tile.container.style.height, 10);
+    const width = Number.isNaN(parsedWidth) ? 600 : parsedWidth;
+    const height = Number.isNaN(parsedHeight) ? 400 : parsedHeight;
+    const isHorizontal = orientation === 'horizontal';
+    setBufferSize(tile.id, width + (isHorizontal ? 450 : 0), height + (isHorizontal ? 0 : 450));
+
+    const splitLabel = isHorizontal ? '|' : '–';
+    const splitButton = _$$(tile.frame, C.TileControls.control).find(
+      x => x.textContent === splitLabel,
+    );
+    if (!splitButton || !window) {
+      return;
+    }
+    await clickElement(splitButton);
+
+    const node = await $(window, C.Node.node);
+    const companion = _$$(node, C.Node.child)[1] as Element | undefined;
+    if (companion) {
+      await setChildCommand(companion, command);
+    }
+    return;
+  }
+
+  if (!tile.container.classList.contains(C.Node.child)) {
+    return;
+  }
+  const node = tile.container.parentElement!;
+  const sibling = _$$(node, C.Node.child).find(x => x !== tile.container);
+  if (sibling) {
+    await setChildCommand(sibling, command);
+  }
+}
+
+async function setChildCommand(child: Element, command: string) {
+  const tile = _$(child, C.Tile.tile);
+  const id = tile ? getPrunId(tile) : null;
+  if (id && dispatchClientPrunMessage(UI_TILES_CHANGE_COMMAND(id, command))) {
+    return;
+  }
+
+  const input = (await $(child, C.PanelSelector.input)) as HTMLInputElement;
+  changeInputValue(input, command);
+  input.form!.requestSubmit();
 }
