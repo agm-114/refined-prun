@@ -14,6 +14,7 @@
 ### Fixed
 
 - `CXPC`: Fixed the chart not respecting the "Default CX Chart Type" setting (`cxpc-chart-types`)
+- `POPID`: Fixed ALL contribution selection exceeding full reserves (`contribution-bulk-controls`)
 - `PROD`: Fixed order completion time not displaying for `PROD {planet id}` (`prod-order-eta`)
 - `XIT ACT`: Fixed the "Unknown action feedback overlay" error when CX Buy places an order outside the price band
 - `XIT BURN`: Fixed the TSV export reporting double the inventory in the "Inv" column
