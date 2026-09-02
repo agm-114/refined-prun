@@ -7,44 +7,42 @@ export enum ElementTag {
 }
 
 export function tagUI() {
-  tagFxpoFields();
-  tagPopidColumns();
-}
-
-function tagFxpoFields() {
-  const map = buildMap([
+  tagTileFormFields('FXPO', [
     [L.ForExPlaceOrderForm.label.lots(), ElementTag.FXPO_LOTS_FIELD],
     [L.ForExPlaceOrderForm.label.price(), ElementTag.FXPO_CURRENT_PRICE_FIELD],
     [L.ForExPlaceOrderForm.limit.maximum(), ElementTag.FXPO_MAXIMUM_PRICE_FIELD],
     [L.ForExPlaceOrderForm.limit.minimum(), ElementTag.FXPO_MINIMUM_PRICE_FIELD],
   ]);
 
-  tiles.observe('FXPO', tile => {
-    subscribe($$(tile.anchor, C.forms.formComponent), formComponent => {
-      const label = _$(formComponent, 'label');
-      if (!label) {
-        return;
-      }
-      const span = _$(label, 'span');
-      if (!span) {
-        return;
-      }
-      const textContent = span.textContent;
-      if (textContent) {
-        const tag = map.get(textContent);
-        if (tag !== undefined) {
-          formComponent.classList.add(tag);
-        }
-      }
-    });
+  tagTileTable('POPID', [[L.Contribution.table.reserve(), ElementTag.POPID_RESERVE_CELL]]);
+}
+
+function tagTileFormFields(command: string, mapItems: MapItems) {
+  const tagMap = buildMap(mapItems);
+  tiles.observe(command, tile => tagFormFields(tile.anchor, tagMap));
+}
+
+function tagFormFields(parent: Element, tagMap: Map<string, ElementTag>) {
+  subscribe($$(parent, C.forms.formComponent), formComponent => {
+    const label = _$(formComponent, 'label');
+    if (!label) {
+      return;
+    }
+    const textContent = _$(label, 'span')?.textContent;
+    if (!textContent) {
+      return;
+    }
+    const tag = tagMap.get(textContent);
+    if (tag !== undefined) {
+      formComponent.classList.add(tag);
+    }
   });
 }
 
-function tagPopidColumns() {
-  const columnTags = buildMap([[L.Contribution.table.reserve(), ElementTag.POPID_RESERVE_CELL]]);
-
-  tiles.observe('POPID', tile => {
-    subscribe($$(tile.anchor, 'table'), table => tagTable(table, columnTags));
+function tagTileTable(command: string, mapItems: MapItems) {
+  const tagMap = buildMap(mapItems);
+  tiles.observe(command, tile => {
+    subscribe($$(tile.anchor, 'table'), table => tagTable(table, tagMap));
   });
 }
 
@@ -72,7 +70,9 @@ function tagTable(table: HTMLTableElement, tagMap: Map<string, ElementTag>) {
   });
 }
 
-function buildMap(items: [string | undefined, ElementTag][]) {
+type MapItems = [string | undefined, ElementTag][];
+
+function buildMap(items: MapItems) {
   const map = new Map<string, ElementTag>();
   for (const [key, value] of items) {
     if (key !== undefined) {
