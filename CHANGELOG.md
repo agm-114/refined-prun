@@ -16,6 +16,7 @@
 - `PROD`: Fixed order completion time not displaying for `PROD {planet id}` (`prod-order-eta`)
 - `XIT ACT`: Fixed the "Unknown action feedback overlay" error when CX Buy places an order outside the price band
 - `XIT BURN`: Fixed the TSV export reporting double the inventory in the "Inv" column
+- `XIT BURN`: Fixed workforce allocation accumulation across tiers
 
 ## 26.6.22.2033
 
