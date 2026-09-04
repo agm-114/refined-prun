@@ -8,6 +8,7 @@
 
 ### Changed
 
+- `COM`: The text in backticks now renders as command links (`chat-command-links`)
 - `FXPO`: The "Maximum Lot Size" field now sets a more precise price (`fxpo-maximum-lot-size`)
 - `XIT CONTC`: The conditions with no deadline are now grouped and sorted
 
