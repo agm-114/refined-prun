@@ -10,6 +10,7 @@
 
 - `COM`: The text in backticks now renders as command links (`chat-command-links`)
 - `FXPO`: The "Maximum Lot Size" field now sets a more precise price (`fxpo-maximum-lot-size`)
+- `XIT ACT`: The package name title now validates the new name before saving
 - `XIT CONTC`: The conditions with no deadline are now grouped and sorted
 
 ### Fixed
