@@ -425,12 +425,19 @@ showBuffer('CXM AI1.RAT');  // opens a buffer with the given command
 ## Tile Overlays
 
 ```ts
-import { showTileOverlay, showConfirmationOverlay, showErrorOverlay } from '@src/infrastructure/prun-ui/tile-overlay';
+import {
+  showTileOverlay,
+  showConfirmationOverlay,
+  showErrorOverlay,
+  showSuccessOverlay,
+} from '@src/infrastructure/prun-ui/tile-overlay';
 
 // Pass the event from the user action so that the show function can find the correct tile.
 showTileOverlay(event, EditorComponent, props);
 showConfirmationOverlay(event, onConfirm, { message: 'Are you sure?' });
 showErrorOverlay(event, 'Illegal arguments.');
+showSuccessOverlay(event); // Uses the localized default message.
+showSuccessOverlay(event, 'Package renamed.');
 ```
 
 ---
