@@ -15,6 +15,7 @@
 - `FXPO`: The "Maximum Lot Size" field now sets a more precise price (`fxpo-maximum-lot-size`)
 - `XIT ACT`: The package name title now validates the new name before saving
 - `XIT CONTC`: The conditions with no deadline are now grouped and sorted
+- `XIT PRUNSTAT`: Switched to raylu's fork
 
 ### Fixed
 
