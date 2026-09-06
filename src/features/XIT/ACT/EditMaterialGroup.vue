@@ -28,7 +28,7 @@ const editFormComponent = computed(() => act.getMaterialGroupInfo(type.value)?.e
 const editForm = useTemplateRef<any>('editForm');
 
 function onSaveClick() {
-  let isValid = editForm.value.validate();
+  let isValid = editForm.value?.validate() ?? true;
   nameError.value = name.value.length === 0;
   isValid &&= !nameError.value;
   if (!isValid) {
@@ -37,7 +37,7 @@ function onSaveClick() {
   for (const key of Object.keys(group)) {
     delete group[key];
   }
-  editForm.value.save();
+  editForm.value?.save();
   group.name = name.value;
   group.type = type.value;
   onSave?.();
