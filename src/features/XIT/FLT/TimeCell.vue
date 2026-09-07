@@ -42,11 +42,13 @@ const hasItems = computed(() => (inventory.value?.items.length ?? 0) > 0);
         <span
           :class="[$style.actionBtn, hasItems ? $style.bgOrange : $style.bgBlue]"
           :style="{ paddingRight: '5px' }"
+          data-tooltip="Open inventory"
           @click.stop="showBuffer(`SHPI ${ship?.registration}`)">
           {{ hasItems ? '⭱' : '⭳' }}
         </span>
         <span
           :class="[$style.actionBtn, $style.bgGreen]"
+          data-tooltip="Open flight control"
           @click.stop="showBuffer(`SFC ${ship?.registration}`)">
           ✈
         </span>
