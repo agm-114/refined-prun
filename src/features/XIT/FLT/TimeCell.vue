@@ -33,15 +33,18 @@ const hasItems = computed(() => (inventory.value?.items.length ?? 0) > 0);
   <div :class="$style.container">
     <template v-if="timeData">
       <div :class="$style.timeColumn" @click.stop="showBuffer(`SFC ${ship?.registration}`)">
-        <span style="color: #99d5ff">{{ timeData.relative }}</span>
-        <span style="color: #888">({{ timeData.absolute }})</span>
+        <span :class="$style.relativeTime">{{ timeData.relative }}</span>
+        <span :class="$style.absoluteTime">({{ timeData.absolute }})</span>
       </div>
     </template>
     <template v-else>
       <div :class="$style.actions">
         <span
-          :class="[$style.actionBtn, hasItems ? $style.bgOrange : $style.bgBlue]"
-          :style="{ paddingRight: '5px' }"
+          :class="[
+            $style.actionBtn,
+            $style.inventoryAction,
+            hasItems ? $style.bgOrange : $style.bgBlue,
+          ]"
           data-tooltip="Open inventory"
           @click.stop="showBuffer(`SHPI ${ship?.registration}`)">
           {{ hasItems ? '⭱' : '⭳' }}
@@ -71,6 +74,14 @@ const hasItems = computed(() => (inventory.value?.items.length ?? 0) > 0);
   flex-direction: column;
 }
 
+.relativeTime {
+  color: #99d5ff;
+}
+
+.absoluteTime {
+  color: #888;
+}
+
 .actions {
   display: flex;
   flex-direction: row;
@@ -86,6 +97,10 @@ const hasItems = computed(() => (inventory.value?.items.length ?? 0) > 0);
   align-items: center;
   justify-content: center;
   color: white;
+}
+
+.inventoryAction {
+  padding-right: 5px;
 }
 
 .bgOrange {
