@@ -278,7 +278,7 @@ function onClick() {
 
 <style module>
 .container {
-  margin: 0px;
+  margin: 0;
   cursor: pointer;
   display: flex;
   min-width: 30px;
