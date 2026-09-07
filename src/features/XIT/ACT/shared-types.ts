@@ -29,9 +29,11 @@ export type AssertFn = (condition: any, message: string) => asserts condition;
 export interface ActionStepGenerateContext<TConfig>
   extends ActionRunnerContext<UserData.ActionData> {
   config: TConfig;
+  packageName: string;
   fail: (message?: string) => void;
   assert: AssertFn;
   getMaterialGroup: (name: string | undefined) => Promise<MaterialBill | undefined>;
+  getMaterialGroupPlanet: (name: string | undefined) => string | undefined;
   emitStep: (step: ActionStep) => void;
   state: {
     WAR: {
@@ -55,3 +57,4 @@ export interface ActionStepExecuteContext<T> extends ActionRunnerContext<T> {
 }
 
 export const configurableValue = 'Configure on Execution';
+export const groupTargetPrefix = 'group:';
