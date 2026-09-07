@@ -294,7 +294,7 @@ const rows = computed(() => {
     return sorted;
   }
 
-  // If primary sort is disabled, use secondary as primary
+  // If primary sort is disabled, use secondary as primary.
   let activePrimaryKey = primaryKey;
   let activePrimaryDirection = primaryDirection;
   let activeSecondaryKey: SortKey | undefined;
@@ -981,7 +981,7 @@ function getCargoState(cargoRatio: number) {
     <div
       :class="[layoutMode !== 'compact' ? $style.tableContainerFill : $style.tableContainer]"
       :style="{ gridTemplateColumns }">
-      <!-- Header row -->
+      <!-- Header row. -->
       <div :class="$style.headerRow">
         <div
           v-if="showColName"
@@ -1111,7 +1111,7 @@ function getCargoState(cargoRatio: number) {
         </div>
       </div>
 
-      <!-- Body rows -->
+      <!-- Body rows. -->
       <div v-for="x in rows" :key="x.ship.id" :class="$style.row">
         <div v-if="showColName" :class="[$style.bodyCell]">
           <span :class="C.Link.link" @click="showBuffer(`SFC ${x.ship.registration}`)">
@@ -1295,7 +1295,7 @@ function getCargoState(cargoRatio: number) {
   container-type: inline-size;
 }
 
-/* Grid table structure */
+/* Grid table structure. */
 .tableContainer {
   display: inline-grid;
 }
@@ -1322,7 +1322,7 @@ function getCargoState(cargoRatio: number) {
   font-family: 'Droid Sans', sans-serif;
 }
 
-/* Header and body cell base styles */
+/* Header and body cell base styles. */
 .headerCell,
 .bodyCell {
   display: flex;
