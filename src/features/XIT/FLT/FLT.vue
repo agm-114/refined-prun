@@ -353,15 +353,15 @@ const problemFuelThresholdValue = computed(() => {
   return problemFuelThreshold.value === 'any' ? 1 : Number(problemFuelThreshold.value) / 100;
 });
 
-function hasFuelProblem(row: FlightRow): boolean {
+function hasFuelProblem(row: FlightRow) {
   return hasStlFuelProblem(row) || hasFtlFuelProblem(row);
 }
 
-function hasStlFuelProblem(row: FlightRow): boolean {
+function hasStlFuelProblem(row: FlightRow) {
   return hasFuelLevelProblem(row.stlFuelRatio);
 }
 
-function hasFtlFuelProblem(row: FlightRow): boolean {
+function hasFtlFuelProblem(row: FlightRow) {
   return hasFuelLevelProblem(row.ftlFuelRatio);
 }
 
