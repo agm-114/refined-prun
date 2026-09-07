@@ -354,20 +354,24 @@ const problemFuelThresholdValue = computed(() => {
 });
 
 function hasFuelProblem(row: FlightRow): boolean {
-  const threshold = problemFuelThresholdValue.value;
-  const ftlRatio = row.ftlFuelRatio ?? 1;
-  const stlRatio = row.stlFuelRatio ?? 1;
-  return ftlRatio < threshold || stlRatio < threshold;
+  return hasStlFuelProblem(row) || hasFtlFuelProblem(row);
 }
 
 function hasStlFuelProblem(row: FlightRow): boolean {
-  const threshold = problemFuelThresholdValue.value;
-  return (row.stlFuelRatio ?? 1) < threshold;
+  return hasFuelLevelProblem(row.stlFuelRatio);
 }
 
 function hasFtlFuelProblem(row: FlightRow): boolean {
+  return hasFuelLevelProblem(row.ftlFuelRatio);
+}
+
+function hasFuelLevelProblem(ratio: number | undefined) {
+  if (ratio === undefined) {
+    return false;
+  }
+
   const threshold = problemFuelThresholdValue.value;
-  return (row.ftlFuelRatio ?? 1) < threshold;
+  return problemFuelThreshold.value === 'any' ? ratio < threshold : ratio <= threshold;
 }
 
 const hasAnyProblems = computed(() => {
