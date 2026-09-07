@@ -13,7 +13,7 @@ import RadioItem from '@src/components/forms/RadioItem.vue';
 import StatusCell from './StatusCell.vue';
 import TimeCell from './TimeCell.vue';
 import CargoBar from './CargoBar.vue';
-import { fixed0 } from '@src/utils/format';
+import { fixed0, percent0 } from '@src/utils/format';
 import { timestampEachMinute } from '@src/utils/dayjs';
 
 type SortKey =
@@ -196,7 +196,7 @@ const rawRows = computed<FlightRow[] | undefined>(() => {
       fuelRatio,
       warningFuelRatio,
       statusSortValue,
-      conditionText: `${Math.round(conditionPercentage)}%`,
+      conditionText: percent0(ship.condition),
       cargoSizeText: getCargoSizeText(inventory),
       isFtlCapable,
       inFlight,
@@ -606,7 +606,7 @@ function getCargoSizeText(inventory: PrunApi.Store | undefined) {
 
 function toCompactK(value: number) {
   if (value >= 1000) {
-    return `${Math.round(value / 1000)}k`;
+    return `${fixed0(value / 1000)}k`;
   }
   return fixed0(value);
 }

@@ -146,7 +146,7 @@ export function formatEta(from: number, to: number) {
 export function displaytimeBetween(from: number, to: number) {
   const diffMs = to - from;
   if (diffMs <= 0) {
-    return '0m';
+    return `${fixed0(0)}m`;
   }
 
   const totalSeconds = Math.floor(diffMs / 1000);
@@ -156,13 +156,13 @@ export function displaytimeBetween(from: number, to: number) {
 
   const parts: string[] = [];
   if (days > 0) {
-    parts.push(`${days}d`);
+    parts.push(`${fixed0(days)}d`);
   }
   if (hours > 0) {
-    parts.push(`${hours}h`);
+    parts.push(`${fixed0(hours)}h`);
   }
   if (minutes > 0 || parts.length === 0) {
-    parts.push(`${minutes}m`);
+    parts.push(`${fixed0(minutes)}m`);
   }
 
   return parts.join(' ');
