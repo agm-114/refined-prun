@@ -290,6 +290,10 @@ const rows = computed(() => {
   const secondaryKey = secondarySortKey.value;
   const secondaryDirection = getSortDirection(secondaryKey);
 
+  if (primaryDirection === 'none' && secondaryDirection === 'none') {
+    return sorted;
+  }
+
   // If primary sort is disabled, use secondary as primary
   let activePrimaryKey = primaryKey;
   let activePrimaryDirection = primaryDirection;
