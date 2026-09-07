@@ -727,6 +727,9 @@ function clearFilters() {
   problemFuelThreshold.value = DEFAULTS.problemFuelThreshold;
 }
 
+// Use a 2–6 letter or digit prefix, such as "[HAUL] Atlas" or "(HAUL) Atlas".
+// Names like "HAUL Atlas", "HAUL-Atlas", and "HAUL_Atlas" also define class HAUL.
+// Without a name prefix, the class uses up to six leading registration letters or digits.
 function getShipClass(ship: PrunApi.Ship) {
   const name = ship.name?.toUpperCase() ?? '';
   const nameMatch =
