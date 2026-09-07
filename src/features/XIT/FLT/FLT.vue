@@ -14,6 +14,7 @@ import StatusCell from './StatusCell.vue';
 import TimeCell from './TimeCell.vue';
 import CargoBar from './CargoBar.vue';
 import { fixed0 } from '@src/utils/format';
+import { timestampEachMinute } from '@src/utils/dayjs';
 
 type SortKey =
   | 'name'
@@ -165,7 +166,7 @@ const rawRows = computed<FlightRow[] | undefined>(() => {
         )
       : 0;
     const fuelRatio = Math.max(stlFuelRatio ?? 0, ftlFuelRatio ?? 0);
-    const now = Date.now();
+    const now = timestampEachMinute.value;
     const arrivalTimestamp = flight?.arrival.timestamp;
     const statusSortValue =
       arrivalTimestamp != null && !Number.isNaN(arrivalTimestamp)
