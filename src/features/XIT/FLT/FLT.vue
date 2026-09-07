@@ -561,28 +561,28 @@ function compareByKey(a: FlightRow, b: FlightRow, key: SortKey) {
       return nameCompare;
     case 'cargo': {
       const primary = a.cargoRatio - b.cargoRatio;
-      return primary !== 0 ? primary : nameCompare;
+      return primary;
     }
     case 'status':
     case 'eta': {
       const primary = a.statusSortValue - b.statusSortValue;
-      return primary !== 0 ? primary : nameCompare;
+      return primary;
     }
     case 'repair': {
       const primary = a.ship.condition - b.ship.condition;
-      return primary !== 0 ? primary : nameCompare;
+      return primary;
     }
     case 'size': {
       const primary = a.cargoCapacity - b.cargoCapacity;
-      return primary !== 0 ? primary : nameCompare;
+      return primary;
     }
     case 'shipClass': {
       const primary = a.shipClass.localeCompare(b.shipClass);
-      return primary !== 0 ? primary : nameCompare;
+      return primary;
     }
     case 'fuel': {
       const primary = a.fuelRatio - b.fuelRatio;
-      return primary !== 0 ? primary : nameCompare;
+      return primary;
     }
   }
 }
