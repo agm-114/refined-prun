@@ -4,10 +4,8 @@ import { shipsStore } from '@src/infrastructure/prun-api/data/ships';
 import { flightsStore } from '@src/infrastructure/prun-api/data/flights';
 import { showBuffer } from '@src/infrastructure/prun-ui/buffers';
 import { getShipStatusIcon, stationaryShipStatusIcon } from '@src/core/ship-status-icons';
-import {
-  getEntityNameFromAddress,
-  getLocationLineFromAddress,
-} from '@src/infrastructure/prun-api/data/addresses';
+import { getLocationLineFromAddress } from '@src/infrastructure/prun-api/data/addresses';
+import { getDestinationInfo } from '@src/core/addresses';
 
 const props = defineProps<{
   shipId: string;
@@ -30,11 +28,9 @@ const statusIcon = computed(() => {
 const posData = computed(() => {
   const address = flight.value?.destination ?? ship.value?.address ?? undefined;
   const location = getLocationLineFromAddress(address);
-  const prefix = location?.type === 'STATION' ? 'STNS' : 'PLI';
   return {
-    name: getEntityNameFromAddress(address) ?? address?.lines[0]?.entity?.naturalId ?? '',
-    command: `${prefix} ${location?.entity.naturalId}`,
-    invCommand: `INV ${location?.entity.naturalId}`,
+    ...getDestinationInfo(address),
+    invCommand: location ? `INV ${location.entity.naturalId}` : undefined,
   };
 });
 </script>
@@ -43,6 +39,7 @@ const posData = computed(() => {
   <div :class="$style.container">
     <div :class="$style.icons">
       <span
+        v-if="posData.invCommand"
         :class="[C.Link.link, $style.link]"
         data-tooltip="Open inventory"
         data-tooltip-position="left"
@@ -58,6 +55,7 @@ const posData = computed(() => {
       >
     </div>
     <div
+      v-if="posData.command"
       :class="[C.Link.link, $style.link]"
       data-tooltip="Open location"
       data-tooltip-position="left"
